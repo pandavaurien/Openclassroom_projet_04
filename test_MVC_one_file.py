@@ -2,7 +2,7 @@
 
 
 class ViewAddPlayer:
-    """docstring"""
+    """Class displaying the views when a user add a player"""
 
     def prompt_for_add_last_name(self):
         valid_last_name = False
@@ -76,7 +76,7 @@ class ViewAddPlayer:
 
 
 class Player:
-    """Contain all the data on a chess player"""
+    """Contain all the data of a chess player"""
     def __init__(self, last_name="", first_name="", birthdate="", gender="", ranking=0):
         self.last_name = last_name
         self.first_name = first_name
@@ -92,7 +92,7 @@ class Player:
 
     
 class ControllerAddPlayer:
-    """docstring"""
+    """Controllers when a user wants to add a player in the database"""
     
     player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Ranking"]
     player_values = []
@@ -129,7 +129,6 @@ class ControllerAddPlayer:
         self.serialise_player()
         
         print(self.serialized_player)
-
 
 def main():
     controller = ControllerAddPlayer(view, player)
