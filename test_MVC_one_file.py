@@ -1,5 +1,8 @@
-"""docstring"""
+# coding: utf-8
 
+"""docstring"""
+from tinydb import TinyDB, Query
+player_database = TinyDB('players.json')
 
 class ViewAddPlayer:
     """Class displaying the views when a user add a player"""
@@ -77,14 +80,13 @@ class ViewAddPlayer:
 
 class Player:
     """Contain all the data of a chess player"""
-    def __init__(self, last_name="", first_name="", birthdate="", gender="", ranking=0):
+    def __init__(self, last_name="", first_name="", birthdate="", gender="", ranking=""):
         self.last_name = last_name
         self.first_name = first_name
         self.birthdate = birthdate
         self.gender = gender
         self.ranking = ranking
-    
-    
+        
     birthdate_list = []
 
     def create_birthdate(self):
@@ -107,7 +109,11 @@ class ControllerAddPlayer:
         for keys in ControllerAddPlayer.player_keys:
             ControllerAddPlayer.serialized_player[keys] = ControllerAddPlayer.player_values[indice_values]
             indice_values += 1
-
+    
+    def insert_player_in_database(self, player):
+        self.player = player
+        player_database.insert(self.player)
+        
     def run(self):
         # while True:
         last_name = self.view.prompt_for_add_last_name()
@@ -127,7 +133,7 @@ class ControllerAddPlayer:
         self.player_values.append(ranking)
         
         self.serialise_player()
-        
+        self.insert_player_in_database(self.serialized_player)
         print(self.serialized_player)
 
 def main():
