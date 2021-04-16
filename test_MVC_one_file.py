@@ -50,7 +50,7 @@ class ViewAddPlayer:
             if self.birth_year.isdigit() == True and len(self.birth_year) == 4 and int(self.birth_year) < 2021:
                 valid_year = True
             else:
-                print("Veuillez entrer une année à 4 chiffres (exemple : 1980")
+                print("Veuillez entrer une année à 4 chiffres (exemple : 1980)")
         
         return Player.birthdate_list.append(self.birth_day), Player.birthdate_list.append(self.birth_month), Player.birthdate_list.append(self.birth_year)
 
@@ -98,8 +98,8 @@ class ControllerAddPlayer:
     
     player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Ranking"]
     player_values = []
-    serialized_player = {"Nom" : "", "Prénom" : "", "Date de naissance" : "", "Sexe" : "", "Ranking" : 0}
-
+    serialized_player = {}
+    
     def __init__(self, view=None, player=None):
         self.player = player
         self.view = view
@@ -115,7 +115,6 @@ class ControllerAddPlayer:
         player_database.insert(self.player)
         
     def run(self):
-        # while True:
         last_name = self.view.prompt_for_add_last_name()
         self.player_values.append(last_name)
 
