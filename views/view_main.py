@@ -1,5 +1,3 @@
-from models import menus
-
 
 class MainMenuDisplay:
     """Docstring"""
@@ -15,21 +13,6 @@ class MainMenuDisplay:
               " Entrez le numéro correspondant au menu choisi :\n"
               "------------------------------------------------\n")             
 
-    # def get_user_choice(self):
-    #     """Ask user to choose a menu in the main menu"""
-    #     valid_choice = False
-    #     while not valid_choice:
-    #         choice = input("--> ")
-    #         if choice == "1":
-    #             valid_choice = True
-    #         elif choice == "2":
-    #             valid_choice = True
-    #         elif choice == "3":
-    #             valid_choice = True
-    #         else:
-    #             print("Vous devez entrer 1, 2 ou 3")
-    #     return choice
-
 
 class DisplayMenu:
     """Display the menu choosen by the user"""
@@ -40,15 +23,14 @@ class DisplayMenu:
 
 
 class GetUserChoiceInMenu:
-    """Ask user to choose a menu in the main menu"""
+    """Ask user to choose in a menu"""
     def __call__(self, menu_dict_choosen):
-        self.menu_dict_choosen = menu_dict_choosen
-
         valid_choice = False
         while not valid_choice:
             choice = input("--> ")
-            if choice == menu_dict_choosen[choice]:
+            if choice in menu_dict_choosen:
                 valid_choice = True
+                print(menu_dict_choosen[choice])
             else:
                 print("Vous devez entrer le chiffre correspondant au menu")
-        return menu_dict_choosen[choice]
+        return choice

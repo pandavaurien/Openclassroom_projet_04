@@ -1,6 +1,7 @@
 from views import view_main
-from models import menus
-
+from views import menus
+from views import player
+from controllers import control_player
 
 
 class ApplicationController:
@@ -17,33 +18,46 @@ class HomeMenuController:
     menu = menus.Menus()
     
     def run(self):
-        self.view.display_title() # Show the main title
-        self.display_menu(self.menu.main_menu_dict) # Show the main menu
-        entry = self.get_user_choice(self.menu.main_menu_dict) # Prompt to choose 
+        # Show the main title
+        self.view.display_title() 
+
+        # Show the main menu
+        self.display_menu(self.menu.main_menu_dict) 
+
+        # Ask and return the user's choice
+        entry = self.get_user_choice(self.menu.main_menu_dict)  
+        
         self.link_to_menu(entry)
 
     def link_to_menu(self, entry): 
-        self.PMController = PlayerMenuController()
-        self.TMController = TournamentMenuController()
-        self.QAController = QuitAppController()
+        self.player_menu_controller = PlayerMenuController()
+        self.tournament_menu_controller = TournamentMenuController()
+        self.quit_app_controller = QuitAppController()
+        self.report_menu_controller = ReportMenuController()
+        
         if entry == "1":
-            self.PMController.run()
+            self.player_menu_controller.run()
         if entry == "2":
-            self.TMController.run()
+            self.tournament_menu_controller.run()
         if entry == "3":
-            self.QAController.run()
+            self.report_menu_controller.run()
+        if entry == "4":
+            self.quit_app_controller.run()
 
 
-class PlayerMenuController:
+
+class TournamentMenuController:
     display_menu = view_main.DisplayMenu()
     menu = menus.Menus()
     def run(self):
-        self.display_menu(self.menu.player_root_menu_dict)
-    
+        self.display_menu(self.menu.tournament_root_menu_dict)
 
-class TournamentMenuController:
+
+class ReportMenuController:
+    display_menu = view_main.DisplayMenu()
+    menu = menus.Menus()
     def run(self):
-        print("dans le TournamentMenuController")
+        self.display_menu(self.menu.report_root_menu_dict)
 
 
 class QuitAppController:
