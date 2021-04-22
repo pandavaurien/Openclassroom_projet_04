@@ -11,5 +11,12 @@ class MainMenuDisplay:
               "-----------------Menu principal-----------------\n"
               "------------------------------------------------\n"
               " Entrez le numéro correspondant au menu choisi :\n"
-              "------------------------------------------------\n")             
+              "------------------------------------------------\n")
 
+# class Prompt_to_choose_a_menu :
+#     def __init__(self):
+#         pass
+
+#     def __call__(self):
+#         print()
+#         choice = input("-->")
