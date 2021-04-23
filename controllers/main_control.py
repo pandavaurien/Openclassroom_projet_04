@@ -11,8 +11,7 @@ class HomeMenuController:
         self.clear = view_main.ClearScreen()
         self.create_menu = create_menus.CreateMenus()
         self.choosen_controller = None
-        
-                
+                        
     def __call__(self):
         self.clear()
         self.view.display_title()
@@ -60,14 +59,4 @@ class TournamentMenuController:
 class QuitAppController:
     def __call__(self):
         pass
-
-# class Validate_string:
-#     def __init__ (self, string_to_check):
-#         self.string_to_check = string_to_check
-
-#     def __call__(self):
-#         if self.string_to_check == "":
-#             pass
-        
-        
 
