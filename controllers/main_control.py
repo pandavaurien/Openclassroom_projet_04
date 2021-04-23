@@ -1,62 +1,73 @@
-# from controllers import create_menus
 from views import view_main
-
-
-class ApplicationController:
-    def __init__(self):
-        self.controller = None
-    
-    def start(self):
-        self.controller = HomeMenuController()
-        self.controller()
-        # while self.controller:
-        #     self.controller = self.controller()
+from controllers import create_menus
+from controllers import create_player
 
 
 class HomeMenuController:
+    """Display the title and leads to the main menu"""
+    
     def __init__(self):
         self.view = view_main.MainMenuDisplay()
-        self.create_menu = CreateMenus()
-
+        self.clear = view_main.ClearScreen()
+        self.create_menu = create_menus.CreateMenus()
+        self.choosen_controller = None
+        
+                
     def __call__(self):
+        self.clear()
         self.view.display_title()
-        self.create_menu(self.create_menu.main_menu)
+        entry = self.create_menu(self.create_menu.main_menu)
+
+        if entry == "1":
+            self.choosen_controller = PlayerMenuController()
+            self.go_to_player_menu_controller()
+        if entry == "2":
+            self.choosen_controller = TournamentMenuController()
+            self.go_to_tournament_menu_controller()
+        if entry == "3":
+            self.choosen_controller = QuitAppController()
+            self.go_to_quit_app_controller()
+        
+    def go_to_player_menu_controller(self):
+        return self.choosen_controller()
+
+    def go_to_tournament_menu_controller(self):
+        return self.choosen_controller()
+
+    def go_to_quit_app_controller(self):
+            return self.choosen_controller()
 
 
 class PlayerMenuController(HomeMenuController):
+
+    def __init__ (self):
+        super().__init__()
+        self.create_player = create_player.CreatePlayerController()
     def __call__(self):
-        self.create_menu(self.create_menu.play_menu)
+        entry = self.create_menu(self.create_menu.player_menu)
+        if entry == "1":
+            self.choosen_controller = self.create_player()
+
+    def go_to_create_player_controller(self):
+        return self.choosen_controller
 
 
-class TournamentMenuController(HomeMenuController):
+class TournamentMenuController:
     def __call__(self):
         return print("Dans le TournamentMenuController")
 
 
 class QuitAppController:
-    pass
+    def __call__(self):
+        pass
 
+# class Validate_string:
+#     def __init__ (self, string_to_check):
+#         self.string_to_check = string_to_check
 
-class CreateMenus():
-    """Crée un menu a partir d'une liste et l'affiche"""
-    
-    def __init__(self):
-        self.main_menu = [("1", "Menu Joueur", "PlayerMenuController()"),
-        ("2", "Menu Tournoi", "TournamentMenuController()"),
-        ("3", "Quitter", "QuitAppController()")]
-
-        self.play_menu = [("1", "Ajouter un joueur à la base", "QuitAppController()"),
-        ("2", "Mettre à jour le classement d'un joueur"),
-        ("3", "Retour au menu principal")]
-
-    def __call__(self, menu_to_display):
-        for line in menu_to_display:
-            print(line[0] + " : "+ line[1])
-        while True:
-            entry = input("-->")
-            for line in menu_to_display:
-                if entry == line[0]:
-                    return line[2]
-            print("Vous devez entrer le chiffre correspondant")
+#     def __call__(self):
+#         if self.string_to_check == "":
+#             pass
+        
         
 
