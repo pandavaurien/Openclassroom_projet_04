@@ -1,40 +1,59 @@
+import pandas as pd
 
-from tinydb import TinyDB, Query
-player_database = TinyDB('models/players.json')
-
+from controllers import main_control
 from models import player_model
+from views import view_main
 
 
 class CreatePlayerController:
+    """Enter all the player's details, then add the player in the database""" 
     def __init__(self):
         self.player_values = []
-        # self.birthdate_list = []
+        self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Ranking"]
+        self.home_menu_controller = main_control.HomeMenuController()
 
-    def __call__(self):
-        last_name = input("Veuillez entrer le nom de famille :")
-        last_name = self.validate_string(last_name)
-        self.player_values.append(last_name)
+    def __call__(self): 
+        self.player_values.append(self.add_last_name())
+        self.player_values.append(self.add_first_name())
+        self.player_values.append(self.add_birth_details())
+        self.player_values.append(self.add_gender())
+        self.player_values.append(self.add_ranking())
 
-        first_name = input("Veuillez entrer le prénom :")
-        first_name = self.validate_string(first_name)
-        self.player_values.append(first_name)
-        self.player_values.append(self.prompt_for_add_birth_details())
+        view_main.FrameDisplay.display_datas_in_a_frame(self.player_values, self.player_keys)
+
+        self.player_object = player_model.Player(self.player_values[0], self.player_values[1], \
+        self.player_values[2], self.player_values[3], self.player_values[4])
+
+        self.add_player_to_database({
+                                self.player_keys[0] : self.player_object.last_name,
+                                self.player_keys[1] : self.player_object.first_name,
+                                self.player_keys[2] : self.player_object.birthdate,
+                                self.player_keys[3] : self.player_object.gender,
+                                self.player_keys[4] : self.player_object.ranking
+                                }) 
+        self.home_menu_controller()
+    
+    def add_last_name(self):
+        valid_last_name = False
+        while not valid_last_name:
+            last_name = input("Entrez le nom de famille: ")
+            if last_name != "":
+                valid_last_name = True
+            else:
+                print("Vous devez entrer un nom")
+        return last_name
         
-        
-        #player_database.insert({"Nom de famille" : last_name})
-        print(self.player_values)
+    def add_first_name(self):
+        valid_first_name = False
+        while not valid_first_name:
+            first_name = input("Entrez le prénom: ")
+            if first_name != "":
+                valid_first_name = True
+            else:
+                print("Vous devez entrer un prénom ")
+        return first_name
 
-    def validate_string(self, string_to_check):
-            string_valid = False
-            while not string_valid:
-                if string_to_check == "":
-                    print("Le champs ne doit pas être vide")
-                else :
-                    string_valid = True
-                    string_validated = string_to_check.upper()
-                    return string_validated
-
-    def prompt_for_add_birth_details(self):
+    def add_birth_details(self):
         birthdate_list = []
 
         valid_day = False
@@ -66,10 +85,61 @@ class CreatePlayerController:
 
         return f"{birthdate_list[0]}/{birthdate_list[1]}/{birthdate_list[2]}"
 
+    def add_gender(self):
+        valid_gender = False
+        validated_gender = None
+        while not valid_gender:
+            gender = input("Choisissez le genre du joueur \n"
+            "'H' pour un homme \n'F' pour une femme: ")
+            if gender == "H":
+                valid_gender = True
+                validated_gender = "Homme"
+            elif gender == "F":
+                valid_gender = True
+                validated_gender = "Femme"
+            else:
+                print("Vous devez entrer un genre (H ou F)")
+        return validated_gender
+
+    def add_ranking(self):
+        valid_ranking = False
+        while not valid_ranking:
+            ranking = input("Entrez le classement du joueur: ")
+            if ranking.isdigit() == True and int(ranking) >= 0:
+                valid_ranking = True
+            else :
+                print("Vous devez entrer un nombre entier positif")
+        return ranking
+
+    def add_player_to_database(self, player):
+        valid_choice = False
+        while not valid_choice:
+            print("Valider ce joueur ? \n"
+            "'Y' pour valider, 'N' pour recommencer")
+            choice = input("-->")
+            if choice == "Y":
+                valid_choice = True
+                player_model.player_database.insert(player)
+                self.player_values.clear()
+                main_control.HomeMenuController() 
+            elif choice == "N":
+                valid_choice = True
+                main_control.HomeMenuController()
+            else:
+                print("Vous devez entrer 'Y' ou 'N'")
+
+    def update_ranking(self):
+        # query = Query()
+        self.players_database = pd.read_json("models/players.json")
+        # self.players_database_to_print = pd.DataFrame(self.players_database)
+        print(self.players_database)
+        
+        print("\nEntrer le numéro du joueur :")
+        choice_of_a_player = self.function.check_if_digit()
+
+        # player_database.update({"Ranking" : new_ranking}, doc_ids=[choice_of_a_player])
+        # print(player_database.get(doc_id=choice_of_a_player))
+        # time.sleep(2)
+        # self.home_menu_controller()
 
 
-
-
-   
-
-   

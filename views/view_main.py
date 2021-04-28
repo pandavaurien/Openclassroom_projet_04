@@ -1,7 +1,8 @@
 from os import system, name
+import pandas as pd
 
 
-class MainMenuDisplay:
+class MainDisplay:
     """Docstring"""
    
     def display_title(self):
@@ -26,3 +27,19 @@ class ClearScreen:
         else:
             _ = system('clear')
 
+  
+class FrameDisplay:
+    """Display the datas from a controller"""
+    def __init__(self):
+        pass
+
+    def display_datas_in_a_frame(self, data, index=None, columns=None):
+        display = pd.DataFrame(self, data, index, columns)
+        print()
+        print("Voici les données que vous avez entrer :")
+        print()
+        print(display)
+        print()
+        
+        
+    
