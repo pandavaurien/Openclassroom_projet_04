@@ -28,8 +28,28 @@ class CreateTournamentController:
         self.tournament_values.append(self.add_number_of_rounds())
         self.tournament_values.append(self.add_time_control())
         self.tournament_values.append(self.add_description())
-        print(self.tournament_values)
+
+        # Crée un objet tournament
+        self.tournament_object = tournament_model.Tournament(self.tournament_values[0],
+                                                             self.tournament_values[1],
+                                                             self.tournament_values[2],
+                                                             self.tournament_values[3],
+                                                             self.tournament_values[4],
+                                                             self.tournament_values[5]
+                                                            )
+                
+        # J'ajoute les attributs de l'objet tournament_object dans la base de données.
+        self.add_tournament_to_database({
+                                self.tournament_keys[0] : self.tournament_object.tournament_name,
+                                self.tournament_keys[1] : self.tournament_object.location,
+                                self.tournament_keys[2] : self.tournament_object.number_of_rounds,
+                                self.tournament_keys[3] : self.tournament_object.tournament_date,
+                                self.tournament_keys[4] : self.tournament_object.time_control,
+                                self.tournament_keys[5] : self.tournament_object.description
+                                }) 
+
         self.add_players_to_tournament()
+        self.add_players_to_tournament_database(self.players_in_tournament)
 
     def add_tournament_name(self):
         valid_tournament_name = False
@@ -75,7 +95,7 @@ class CreateTournamentController:
         valid_year = False
         while not valid_year:       
             self.birth_year = input("Entrez l'année du tournoi: ")
-            if self.birth_year.isdigit() == True and len(self.birth_year) == 4 and int(self.birth_year) < 2021:
+            if self.birth_year.isdigit() == True and len(self.birth_year) == 4 and int(self.birth_year) >= 2021:
                 valid_year = True
                 date_list.append(self.birth_year)
             else:
@@ -119,17 +139,22 @@ class CreateTournamentController:
         "-->")
         return description
 
+    def add_tournament_to_database(self, tournament):
+        tournament_model.tournament_database.insert(tournament)
+        self.tournament_values.clear()
+
     def add_players_to_tournament(self):
+        """Ajoute les ids des joueurs dans une liste, et renvoit la liste"""
         view_main.ClearScreen()
 
         valid_add_player_choice = False
         while not valid_add_player_choice:
             add_player_choice = input("Voulez-vous ajouter un joueur ?\n"
-            "Appuyer sur 'Y' pour confirmer, ou 'N' pour quitter")
+            "Appuyer sur 'Y' pour confirmer, ou 'N' pour poursuivre")
             if add_player_choice == "Y":
                 valid_add_player_choice = True
             elif add_player_choice == "N":
-                self.home_menu_controller()
+                return
             else:
                 print("Appuyez sur 'Y' ou 'N'")
 
@@ -164,7 +189,6 @@ class CreateTournamentController:
             print()
             print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
             time.sleep(1)
-            
             self.add_players_to_tournament()
      
         if id_choice in self.players_in_tournament:
@@ -177,6 +201,13 @@ class CreateTournamentController:
         self.players_in_tournament.append(id_choice)
         print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
         self.add_players_to_tournament()
+
+    def add_players_to_tournament_database(self, ids_list):
+        # itère dans la liste d'ids de joueurs séléctionnés, et les ajoute dans la base tournament
+        for player in ids_list:
+            player_to_add = player_model.player_database.get(ids_list, doc_id=player)
+            print(f"Joueurs ajoutés au tournoi : {player_to_add['Nom']} {player_to_add['Prénom']}, classement : {player_to_add['Classement']}" )
+            tournament_model.tournament_database.insert(player_to_add)
 
         
 

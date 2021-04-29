@@ -21,8 +21,13 @@ class CreatePlayerController:
 
         view_main.FrameDisplay.display_datas_in_a_frame(self.player_values, self.player_keys)
 
-        self.player_object = player_model.Player(self.player_values[0], self.player_values[1], \
-        self.player_values[2], self.player_values[3], self.player_values[4])
+        # Crée un objet player
+        self.player_object = player_model.Player(self.player_values[0],
+                                                 self.player_values[1],
+                                                 self.player_values[2],
+                                                 self.player_values[3], 
+                                                 self.player_values[4]
+                                                 )
 
         # J'ajoute les attributs de l'objet player_object dans la base de données.
         self.add_player_to_database({

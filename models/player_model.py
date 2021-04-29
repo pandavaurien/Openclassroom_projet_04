@@ -5,11 +5,12 @@ import pandas as pd
 
 from controllers import main_control
 from controllers import functions
-# pd.set_option('display.max_rows', None)
+
 player_database = TinyDB('models/players.json')
 
 
 class Player:
+ 
     def __init__(self, last_name=None, first_name=None, birthdate=None, gender=None, ranking=None):
         self.last_name = last_name
         self.first_name = first_name
@@ -17,6 +18,22 @@ class Player:
         self.gender = gender
         self.ranking = ranking
         self.home_menu_controller = main_control.HomeMenuController()
+
+       # def __init__(self, player_infos=None):
+    #     self.last_name = player_infos["Nom"]
+    #     self.first_name = player_infos["Prénom"]
+    #     self.birthdate = player_infos["Date de naissance"]
+    #     self.gender = player_infos["Sexe"]
+    #     self.ranking = player_infos["Classement"]
+    
+    def serialized_player(self):
+        player_infos = {}
+        player_infos['Nom'] = self.last_name
+        player_infos['Prénom'] = self.first_name
+        player_infos['Date de naissance'] = self.birthdate
+        player_infos['Sexe'] = self.gender
+        player_infos['Classement'] = self.ranking
+        return player_infos
 
     def __repr__(self):
         return f"Nom :{self.last_name} Prénom : {self.first_name} classement :{self.ranking}"    
