@@ -9,7 +9,7 @@ class CreatePlayerController:
     """Enter all the player's details, then add the player in the database""" 
     def __init__(self):
         self.player_values = []
-        self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Ranking"]
+        self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Classement"]
         self.home_menu_controller = main_control.HomeMenuController()
 
     def __call__(self): 
@@ -24,6 +24,7 @@ class CreatePlayerController:
         self.player_object = player_model.Player(self.player_values[0], self.player_values[1], \
         self.player_values[2], self.player_values[3], self.player_values[4])
 
+        # J'ajoute les attributs de l'objet player_object dans la base de données.
         self.add_player_to_database({
                                 self.player_keys[0] : self.player_object.last_name,
                                 self.player_keys[1] : self.player_object.first_name,
@@ -128,18 +129,5 @@ class CreatePlayerController:
             else:
                 print("Vous devez entrer 'Y' ou 'N'")
 
-    def update_ranking(self):
-        # query = Query()
-        self.players_database = pd.read_json("models/players.json")
-        # self.players_database_to_print = pd.DataFrame(self.players_database)
-        print(self.players_database)
-        
-        print("\nEntrer le numéro du joueur :")
-        choice_of_a_player = self.function.check_if_digit()
-
-        # player_database.update({"Ranking" : new_ranking}, doc_ids=[choice_of_a_player])
-        # print(player_database.get(doc_id=choice_of_a_player))
-        # time.sleep(2)
-        # self.home_menu_controller()
-
+    
 

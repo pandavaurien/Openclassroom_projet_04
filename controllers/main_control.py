@@ -80,28 +80,5 @@ class QuitAppController:
         pass
 
 
-class Function:
-    def __init__(self):
-        pass
-    
-    # Ne fonctionne pas 
-    def check_if_digit(self):
-        choice = input("-->")
-        try:
-            int(choice)
-        except:
-            print("\nVous devez entrer un nombre entier")
-            self.check_if_digit()
-
-        return int(choice)
-        
-
-    # def check_if_positive(self, number_to_check):
-        
-    #     if number_to_check <= 0:
-    #             print("\nVous devez entrer un nombre entier")
-    #     return number_to_check
-
-
 
 
