@@ -106,18 +106,18 @@ class CreateTournamentController:
     def add_number_of_rounds(self):
         number_of_rounds = 4
         print("Le nombre de rounds est de 4 par défaut\n"
-        "Souhaitez-vous changer ce nombre ?\n"
-        "Entrer 'Y' pour changer, ou 'N' pour continuer")
+        "Souhaitez-vous changer ce nombre ?")
+        
         valid_number = False
         while not valid_number:
+            print("Entrer 'Y' pour changer, ou 'N' pour continuer")
             choice = input("--> ")
             if choice == "Y":
                 number_of_rounds = input("Entrez le nombre de rounds :")
                 if number_of_rounds.isdigit() :
                     valid_number = True
                 else:
-                    print("Vous devez entrer un nombre entier")
-                    self.add_number_of_rounds()              
+                    print("Vous devez entrer un nombre entier")            
             if choice == "N":
                 valid_number = True
         return number_of_rounds
@@ -206,7 +206,9 @@ class CreateTournamentController:
         # itère dans la liste d'ids de joueurs séléctionnés, et les ajoute dans la base tournament
         for player in ids_list:
             player_to_add = player_model.player_database.get(ids_list, doc_id=player)
-            print(f"Joueurs ajoutés au tournoi : {player_to_add['Nom']} {player_to_add['Prénom']}, classement : {player_to_add['Classement']}" )
+            
+            print(player_to_add)
+            # print(f"Joueurs ajoutés au tournoi : {player_to_add['Nom']} {player_to_add['Prénom']}, classement : {player_to_add['Classement']}" )
             tournament_model.tournament_database.insert(player_to_add)
 
         
@@ -216,7 +218,7 @@ class CreateTournamentController:
 
         # print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
                   
-        #       #db.get(doc_id="")
+        #db.get(doc_id="")
         # player_instance = self.player(player_choosen)
         # print(player_instance)
         
