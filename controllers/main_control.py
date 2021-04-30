@@ -1,7 +1,7 @@
 from views import view_main
 from controllers import create_menus
-from controllers import create_player
-from controllers import tournament
+from controllers import player_controller
+from controllers import tournament_controller
 from models import player_model
 
 
@@ -43,7 +43,7 @@ class PlayerMenuController(HomeMenuController):
 
     def __init__ (self):
         super().__init__()
-        self.create_player = create_player.CreatePlayerController()
+        self.create_player = player_controller.CreatePlayerController()
         self.home_menu_controller = HomeMenuController()
         self.player_model = player_model.Player()
     def __call__(self):
@@ -61,7 +61,7 @@ class PlayerMenuController(HomeMenuController):
 class TournamentMenuController(HomeMenuController):
     def __init__ (self):
         super().__init__()
-        self.create_tournament = tournament.CreateTournamentController()
+        self.create_tournament = tournament_controller.CreateTournamentController()
         self.home_menu_controller = HomeMenuController()
     def __call__(self):
         entry = self.create_menu(self.create_menu.tournament_menu)

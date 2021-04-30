@@ -11,6 +11,7 @@ class CreatePlayerController:
         self.player_values = []
         self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Classement"]
         self.home_menu_controller = main_control.HomeMenuController()
+        self.player_model = player_model.Player()
 
     def __call__(self): 
         self.player_values.append(self.add_last_name())
@@ -18,25 +19,9 @@ class CreatePlayerController:
         self.player_values.append(self.add_birth_details())
         self.player_values.append(self.add_gender())
         self.player_values.append(self.add_ranking())
-
-        view_main.FrameDisplay.display_datas_in_a_frame(self.player_values, self.player_keys)
-
-        # Crée un objet player
-        self.player_object = player_model.Player(self.player_values[0],
-                                                 self.player_values[1],
-                                                 self.player_values[2],
-                                                 self.player_values[3], 
-                                                 self.player_values[4]
-                                                 )
-
-        # J'ajoute les attributs de l'objet player_object dans la base de données.
-        self.add_player_to_database({
-                                self.player_keys[0] : self.player_object.last_name,
-                                self.player_keys[1] : self.player_object.first_name,
-                                self.player_keys[2] : self.player_object.birthdate,
-                                self.player_keys[3] : self.player_object.gender,
-                                self.player_keys[4] : self.player_object.ranking
-                                }) 
+        if self.validate_player():
+            self.player_model.add_to_database(self.player_values)
+        self.player_values.clear()
         self.home_menu_controller()
     
     def add_last_name(self):
@@ -115,24 +100,24 @@ class CreatePlayerController:
                 valid_ranking = True
             else :
                 print("Vous devez entrer un nombre entier positif")
-        return ranking
+        return int(ranking)
 
-    def add_player_to_database(self, player):
-        valid_choice = False
-        while not valid_choice:
+    def validate_player(self):
+        view_main.FrameDisplay.display_datas_in_a_frame(self.player_values, self.player_keys)
+
+        validated_choice = False
+        while not validated_choice:
             print("Valider ce joueur ? \n"
             "'Y' pour valider, 'N' pour recommencer")
             choice = input("-->")
             if choice == "Y":
-                valid_choice = True
-                player_model.player_database.insert(player)
-                self.player_values.clear()
-                main_control.HomeMenuController() 
+                validated_choice = True
             elif choice == "N":
-                valid_choice = True
                 main_control.HomeMenuController()
             else:
-                print("Vous devez entrer 'Y' ou 'N'")
+                print("Vous devez entrer 'Y' ou 'N'") 
+        return validated_choice 
+   
 
     
 
