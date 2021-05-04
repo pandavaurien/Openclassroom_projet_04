@@ -12,16 +12,16 @@ class Tournament:
     """Use to create an instance of a tournament"""
     def __init__(self, tournament_name=None,
                        location=None,
+                       tournament_date=None,
                        number_of_rounds=4, 
-                       tournament_date=None, 
                        time_control=None, 
                        description=None,
                        players_ids=None):
 
         self.tournament_name = tournament_name
-        self.location = location
-        self.number_of_rounds = number_of_rounds
+        self.location = location        
         self.tournament_date = tournament_date
+        self.number_of_rounds = number_of_rounds
         self.time_control = time_control
         self.description = description
         self.players_ids = players_ids
@@ -36,12 +36,30 @@ class Tournament:
         tournament_infos = {}
         tournament_infos['Nom du tournoi'] = self.tournament_name
         tournament_infos['Lieu'] = self.location
-        tournament_infos['Nombre de match'] = self.number_of_rounds
         tournament_infos['Date'] = self.tournament_date
+        tournament_infos['Nombre de match'] = self.number_of_rounds
         tournament_infos['Contrôle du temps'] = self.time_control
         tournament_infos['Description'] = self.description
         tournament_infos["Joueurs"] = self.players_ids
         return tournament_infos
+
+    def unserialized(self, serialized_tournament):
+        tournament_name = serialized_tournament['Nom du tournoi']
+        location = serialized_tournament['Lieu']
+        tournament_date = serialized_tournament['Date']
+        number_of_rounds = serialized_tournament['Nombre de match']
+        time_control = serialized_tournament['Contrôle du temps']
+        description = serialized_tournament['Description']
+        players_ids = serialized_tournament["Joueurs"]
+        return Tournament(tournament_name, 
+                          location,
+                          tournament_date,
+                          number_of_rounds, 
+                          time_control,
+                          description,
+                          players_ids
+                          )
+
 
     def add_to_database(self, tournament_values):
         tournament = Tournament(tournament_values[0],

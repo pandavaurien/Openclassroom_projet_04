@@ -28,9 +28,17 @@ class Player:
         player_infos['Classement'] = self.ranking
         return player_infos
 
-    def __str__(self):
-        pass
+    def unserialized(self, serialized_player):
+        last_name = serialized_player["Nom"]
+        first_name = serialized_player["Prénom"]
+        birthdate = serialized_player["Date de naissance"]
+        gender = serialized_player["Sexe"]
+        ranking = serialized_player["Classement"]
+        return Player(last_name, first_name, birthdate, gender, ranking)
 
+    def __str__(self):
+        return f"{self.last_name} {self.first_name}, classement : {self.ranking}"
+        
     def update_ranking(self):
         self.players_database = pd.read_json("models/players.json")
         print(self.players_database)

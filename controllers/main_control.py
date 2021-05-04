@@ -63,12 +63,13 @@ class TournamentMenuController(HomeMenuController):
         super().__init__()
         self.create_tournament = tournament_controller.CreateTournamentController()
         self.home_menu_controller = HomeMenuController()
+        self.start_tournament = tournament_controller.StartTournament()
     def __call__(self):
         entry = self.create_menu(self.create_menu.tournament_menu)
         if entry == "1":
             self.choosen_controller = self.create_tournament()
         if entry == "2":
-            pass
+            self.choosen_controller = self.start_tournament()
         if entry == "3":
             pass
         if entry == "4":

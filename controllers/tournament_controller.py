@@ -1,4 +1,5 @@
 import time
+from operator import itemgetter
 
 import pandas as pd
 
@@ -181,13 +182,127 @@ class CreateTournamentController:
         print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
         self.add_players_to_tournament()
 
+
 class StartTournament:
     """Docstring"""
     def __init__(self):
+        
+        self.tour = Tour()
+        self.tournament = tournament_model.Tournament()
+        self.tournament_object = None
+        
+    def __call__(self):
+        self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
+        self.tour.sort_player_by_rank(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
+        # for tour in range (self.tournament_object.number_of_rounds): # 
+        self.tour()
+
+    def select_a_tournament(self):
+        display_tournament = pd.read_json("models/tournament.json")
+        print(display_tournament)
+
+        valid_entry = False
+        while not valid_entry:
+            print("Entrez le chiffre correspondant au tournoi")
+            choice = input("--> ")
+            try:
+                choice.isdigit() == False
+                int(choice) > len(tournament_model.tournament_database)
+                int(choice) <= 0
+            except Exception:
+                print("Vous devez entrer le chiffre correspondant au tournoi")
+            
+            else:
+                choosen_tournament = tournament_model.tournament_database.get(doc_id=int(choice))
+                tournament_object = self.tournament.unserialized(choosen_tournament)
+                # print(tournament_object.__str__())
+                return tournament_object
+    
+
+
+
+class Tour:
+    """
+    Chaque tour est une liste de matchs. Chaque match consiste en une paire de joueurs 
+    avec un champ de résultats pour chaque joueur. Lorsqu'un tour est terminé, 
+    le gestionnaire du tournoi saisit les résultats de chaque match avant de 
+    générer les paires suivantes.
+    """
+    tour_number = 1
+
+    def __init__(self, name=None, begin_time=None, end_time=None):
+        self.name = name
+        self.begin_time = begin_time
+        self.end_time = end_time
+        self.player_class = player_model.Player()
+        self.round = Round()
+        self.list_of_rounds = []
+        self.sorted_players = []
+        
+    def __call__(self):
+        # tant qu'il y a des joueurs dans la liste, ajoute des instances de 'Round' dans la liste 'list_of_rounds'
+        while len(self.sorted_players) > 0:
+            self.list_of_rounds.append(self.round.create_instance(self.sorted_players))
+            del self.sorted_players[0]
+            del self.sorted_players[0]
+       
+   
+    def sort_player_by_rank(self, tournament):
+        players_serialized = []
+        id_list = tournament.players_ids
+        
+        # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
+        for id in id_list:
+            player = player_model.player_database.get(doc_id=id) 
+            players_serialized.append(player)
+        players_serialized.sort(key=itemgetter("Classement"), reverse=True)
+
+        # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
+        # et copie chaque instance dans la liste 'sorted_player'
+        for player in players_serialized:
+            player_object = self.player_class.unserialized(player)
+            self.sorted_players.append(player_object)
+
+    def sort_players_by_score(self):
         pass
 
-    def generate_two_lists(self, list):
-        pass
+    
+
+
+class Round:
+    """
+    Un match unique doit être stocké sous la forme d'un tuple contenant deux listes,
+    chacune contenant deux éléments : une référence à une instance de joueur et un score.
+    Les matchs multiples doivent être stockés sous forme de liste sur l'instance du tour.
+
+    Les instances de round doivent être stockées dans une liste sur l'instance
+    de tournoi à laquelle elles appartiennent.
+    """
+
+    round_number = 1
+
+    def __init__(self, name=None, player_1=None, player_2=None, score_joueur_1=0, score_joueur_2=0):
+        self.name = name
+        self.player_1 = player_1
+        self.player_2 = player_2
+        self.score_joueur_1 = score_joueur_1
+        self.score_joueur_2 = score_joueur_2
+
+    def create_instance(self, list_of_player):
+        player_1 = list_of_player[0]
+        player_2 = list_of_player[1]
+    
+        name = "Round" + str(Round.round_number)
+        Round.round_number += 1
+        print(Round(name, player_1, player_2))
+        return Round(name, player_1, player_2)
+    
+    def __str__(self):
+        return f"{self.name} : {self.player_1} --CONTRE-- {self.player_2}. Score : {self.score_joueur_1} - {self.score_joueur_2}"
+
+    
+        
+
 
 
 

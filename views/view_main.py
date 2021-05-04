@@ -2,6 +2,7 @@ from os import system, name
 import pandas as pd
 
 
+
 class MainDisplay:
     """Docstring"""
    
@@ -42,10 +43,17 @@ class FrameDisplay:
         print()
         
         
-class PlayersDisplay:
-    """Display all the players"""
-    def __call__(self):
-        display_players_database = pd.read_json("models/players.json")
-        print(display_players_database)
+# class PlayersDisplay:
+#     """Display all the players"""
+#     def __call__(self):
+#         display_players_database = pd.read_json("models/players.json")
+#         print(display_players_database)
+
+
+# class TournamentDisplay:
+#     """Display all the tournament"""
+#     def __call__(self):
+#         display_tournament_database = pd.read_json("models/players.json")
+#         print(display_players_database)
 
 
