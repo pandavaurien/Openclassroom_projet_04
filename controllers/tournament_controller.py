@@ -31,7 +31,7 @@ class CreateTournamentController:
         self.add_players_to_tournament()
         self.tournament_values.append(self.players_in_tournament)
         self.tournament.add_to_database(self.tournament_values)
-        self.tournament.add_players_of_tournament_in_database(self.players_in_tournament)
+        # self.tournament.add_players_of_tournament_in_database(self.players_in_tournament)
         self.home_menu_controller()
        
     def add_tournament_name(self):
@@ -178,6 +178,11 @@ class CreateTournamentController:
             time.sleep(1)
             self.add_players_to_tournament()
 
+        try:
+            len(id_choice) % 2 != 0
+        except Exception:
+            print("Vous devez avoir un nombre de joueurs pair")
+
         self.players_in_tournament.append(id_choice)
         print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
         self.add_players_to_tournament()
@@ -193,7 +198,7 @@ class StartTournament:
         self.view_tour = view_main.TourDisplay()
     def __call__(self):
         self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
-        self.tour.sort_player_by_rank(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
+        self.tour.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
         self.tournament_object.list_of_tours.append(self.tour()) # 1er tour, joueurs triés par classement
         # tour_instance = self.tour()
         # print(tour_instance.__str__())

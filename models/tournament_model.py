@@ -37,8 +37,8 @@ class Tournament:
         self.home_menu_controller = main_control.HomeMenuController
         self.player_model = player_model.Player()
 
-    def __str__(self):
-        print(f"{self.tournament_name} - {self.list_of_tours}")
+    # def __str__(self):
+    #     print(f"{self.tournament_name} - {self.list_of_tours}")
         
     def serialized(self):
         tournament_infos = {}
@@ -125,7 +125,7 @@ class Tour:
         self.view.display_tour(self.name, self.list_of_rounds)
 
         for round in self.list_of_rounds:
-            score_player_1 = input(f"Entrez le score de {round.player_1} :")
+            score_player_1 = input(f"Entrez le score de {round.player_1} :") #TODO faire une fonction pour vérifier l'input
             round.score_joueur_1 += float(score_player_1)
             score_player_2 = input(f"Entrez le score de {round.player_2} :")
             round.score_joueur_2 += float(score_player_2)
@@ -136,12 +136,16 @@ class Tour:
         
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
 
-    def __str__(self):
-        print(f"{self.name}. Début : {self.begin_time} - Fin : {self.end_time}"
-              f"{self.list_of_finished_rounds}"
-             )
+    # def __str__(self):
+    #     print(f"{self.name}. Début : {self.begin_time} - Fin : {self.end_time}"
+    #           f"{self.list_of_finished_rounds}"
+    #          )
+
+    # def __repr__(self):
+    #     print(f"{self.name}. Début : {self.begin_time} - Fin : {self.end_time}"
+    #           f"{self.list_of_finished_rounds}")
           
-    def sort_player_by_rank(self, tournament):
+    def sort_player_first_tour(self, tournament):
         players_serialized = []
         id_list = tournament.players_ids
         
@@ -154,8 +158,14 @@ class Tour:
         # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
         # et copie chaque instance dans la liste 'sorted_player'
         for player in players_serialized:
-            player_object = self.player_class.unserialized(player)
-            self.sorted_players.append(player_object)
+            player_1 = self.player_class.unserialized(player)
+            index_player_1 = players_serialized.index(player)
+            if index_player_1 + len(players_serialized) / 2 < len(players_serialized):
+                player_2 = self.player_class.unserialized(players_serialized[index_player_1 + int(len(players_serialized) / 2)])
+                self.sorted_players.append(player_1)
+                self.sorted_players.append(player_2)
+            else:
+                pass
 
     def sort_players_by_score(self):
         pass
@@ -186,5 +196,11 @@ class Round:
     
     def __str__(self):
         return f"{self.name} : {self.player_1} --CONTRE-- {self.player_2}."
+
+    # def __repr__(self):
+    #     repr = f"-----------------{self.name}-----------------\n"
+    #     f"{self.player_1}--CONTRE-- {self.player_2}.\n"
+    #     f"Score : {self.score_joueur_1} - {self.score_joueur_2}"
+    #     return repr
 
 

@@ -38,6 +38,9 @@ class Player:
 
     def __str__(self):
         return f"{self.last_name} {self.first_name}, classement : {self.ranking}"
+
+    def __repr__(self):
+        return f"{self.last_name} {self.first_name}"
         
     def update_ranking(self):
         self.players_database = pd.read_json("models/players.json")
