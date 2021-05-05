@@ -1,6 +1,8 @@
 from os import system, name
 import pandas as pd
 
+from models import tournament_model
+
 
 
 class MainDisplay:
@@ -41,6 +43,39 @@ class FrameDisplay:
         print()
         print(display)
         print()
+
+
+class TourDisplay:
+    """Docstring"""
+    def __init__(self):
+        self.round = tournament_model.Round() 
+    
+    def display_tour(self, tour_name, list_of_rounds):
+        """Display the tour at the beginning of it"""
+        
+        print(f"---------------{tour_name}---------------")
+        for round in list_of_rounds:
+            print(round.__str__())
+        print()
+
+    # Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
+    # self.list_of_finished_rounds.append(([round.player_1, score_player_1], [round.player_2, score_player_2]))
+
+    def display_score(self, tour_instance):
+        print(f"---------------{tour_instance.name}---------------\n"
+              f"Heure de début : {tour_instance.begin_time}\n"
+              f"Heure de fin : {tour_instance.end_time}\n")
+        print(f"{tour_instance.list_of_finished_rounds}")
+
+        for tple in tour_instance.list_of_finished_rounds:
+            for lst in tple:
+                print(lst[0], lst[1])
+
+        
+
+            
+
+
         
         
 # class PlayersDisplay:
