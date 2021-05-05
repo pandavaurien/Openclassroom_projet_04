@@ -54,7 +54,7 @@ class TourDisplay:
     def display_tour(self, tour_name, list_of_rounds):
         """Display the tour at the beginning of it"""
         
-        print(f"---------------{tour_name}---------------")
+        print(f"--------------------------{tour_name}-------------------------\n")
         for round in list_of_rounds:
             print(round.__str__())
         print()

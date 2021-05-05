@@ -1,6 +1,5 @@
 import time
 
-
 import pandas as pd
 
 from controllers import main_control
@@ -179,7 +178,7 @@ class CreateTournamentController:
             self.add_players_to_tournament()
 
         try:
-            len(id_choice) % 2 != 0
+            len(self.players_in_tournament) % 2 != 0
         except Exception:
             print("Vous devez avoir un nombre de joueurs pair")
 
@@ -191,15 +190,16 @@ class CreateTournamentController:
 class StartTournament:
     """Docstring"""
     def __init__(self):
-        
         self.tour = tournament_model.Tour()
         self.tournament = tournament_model.Tournament()
         self.tournament_object = None
         self.view_tour = view_main.TourDisplay()
+    
     def __call__(self):
         self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
         self.tour.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
         self.tournament_object.list_of_tours.append(self.tour()) # 1er tour, joueurs triés par classement
+        self.tour.sort_players_by_score()
         # tour_instance = self.tour()
         # print(tour_instance.__str__())
         # self.view_tour.display_score(self.tournament_object.list_of_tours[0])

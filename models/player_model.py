@@ -18,6 +18,7 @@ class Player:
         self.gender = gender
         self.ranking = ranking
         self.home_menu_controller = main_control.HomeMenuController()
+        self.tournament_score = 0
 
     def serialized(self):
         player_infos = {}

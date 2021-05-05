@@ -92,12 +92,13 @@ class Tour:
     Renvoi l'instance de tour
     """
     TOUR_NUMBER = 1
+    MATCHS_PLAYED = []
 
     def __init__(self, name=None, begin_time=None, end_time=None, list_of_finished_rounds=None):
         self.name = name
         self.begin_time = begin_time
         self.end_time = end_time
-        self.player_class = player_model.Player()
+        self.player = player_model.Player()
         self.round = Round()
         self.list_of_rounds = []
         self.sorted_players = []
@@ -112,9 +113,13 @@ class Tour:
         input("Appuyez sur une touche pour commencer le tour")
         print()
         self.begin_time = datetime.datetime.now()
+        print(f"Début du tour : {self.begin_time}")
+        print()
         input("Appuyez sur une touche lorsque le tour est terminé")
         print()
         self.end_time = datetime.datetime.now()
+        print(f"Fin du tour : {self.end_time}")
+        print()
 
         # tant qu'il y a des joueurs dans la liste, ajoute des instances de 'Round' dans la liste 'list_of_rounds'
         while len(self.sorted_players) > 0:
@@ -126,12 +131,16 @@ class Tour:
 
         for round in self.list_of_rounds:
             score_player_1 = input(f"Entrez le score de {round.player_1} :") #TODO faire une fonction pour vérifier l'input
-            round.score_joueur_1 += float(score_player_1)
+            round.player_1.tournament_score += float(score_player_1)
             score_player_2 = input(f"Entrez le score de {round.player_2} :")
-            round.score_joueur_2 += float(score_player_2)
-            self.list_of_finished_rounds.append(([round.player_1, round.score_joueur_1], [round.player_2, round.score_joueur_2]))
+            round.player_2.tournament_score += float(score_player_2)
+            self.list_of_finished_rounds.append(([round.player_1, round.player_1.tournament_score], [round.player_2, round.player_2.tournament_score]))
+        print()
+        print("Score :" + str(self.list_of_finished_rounds))
+        print()
+        print("Matchs déja joués : " + str(Tour.MATCHS_PLAYED))
+        print()
 
-        print(self.list_of_finished_rounds)
         # self.view.display_score(Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds))
         
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
@@ -158,17 +167,35 @@ class Tour:
         # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
         # et copie chaque instance dans la liste 'sorted_player'
         for player in players_serialized:
-            player_1 = self.player_class.unserialized(player)
+            player_1 = self.player.unserialized(player)
             index_player_1 = players_serialized.index(player)
+
+            """ Je divise le nombre de joueurs par 2, et j'ajoute le résultat à l'indice
+            exemple : Pour 8 joueurs, j'ajoute 4 au premier indice,
+            joueur[0] contre joueur [4],
+            joueur[1] contre joueur [5] etc..."""
             if index_player_1 + len(players_serialized) / 2 < len(players_serialized):
-                player_2 = self.player_class.unserialized(players_serialized[index_player_1 + int(len(players_serialized) / 2)])
+                player_2 = self.player.unserialized(players_serialized[index_player_1 + int(len(players_serialized) / 2)])
                 self.sorted_players.append(player_1)
                 self.sorted_players.append(player_2)
+                Tour.MATCHS_PLAYED.append({player_1, player_2})
             else:
                 pass
 
     def sort_players_by_score(self):
-        pass
+        players_sorted_by_score = []
+        
+        for round in self.list_of_finished_rounds:
+            for player in round:
+                players_sorted_by_score.append(player)
+        
+        # def players_score(players_sorted_by_score):
+        #     return players_sorted_by_score[0][1]
+
+        print(players_sorted_by_score)
+        players_sorted_by_score = sorted(players_sorted_by_score, key=itemgetter(1), reverse=True)
+
+        print(players_sorted_by_score)
 
 
 class Round:
@@ -180,12 +207,12 @@ class Round:
 
     ROUND_NUMBER = 1
 
-    def __init__(self, name=None, player_1=None, player_2=None, score_joueur_1=0, score_joueur_2=0):
+    def __init__(self, name=None, player_1=None, player_2=None):
         self.name = name
         self.player_1 = player_1
         self.player_2 = player_2
-        self.score_joueur_1 = score_joueur_1
-        self.score_joueur_2 = score_joueur_2
+        # self.score_joueur_1 = score_joueur_1
+        # self.score_joueur_2 = score_joueur_2
 
     def create_instance(self, list_of_player):
         player_1 = list_of_player[0]
@@ -197,10 +224,5 @@ class Round:
     def __str__(self):
         return f"{self.name} : {self.player_1} --CONTRE-- {self.player_2}."
 
-    # def __repr__(self):
-    #     repr = f"-----------------{self.name}-----------------\n"
-    #     f"{self.player_1}--CONTRE-- {self.player_2}.\n"
-    #     f"Score : {self.score_joueur_1} - {self.score_joueur_2}"
-    #     return repr
 
 
