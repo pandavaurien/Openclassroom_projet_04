@@ -200,6 +200,7 @@ class StartTournament:
         self.tour.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
         self.tournament_object.list_of_tours.append(self.tour()) # 1er tour, joueurs triés par classement
         self.tour.sort_players_by_score()
+        
         # tour_instance = self.tour()
         # print(tour_instance.__str__())
         # self.view_tour.display_score(self.tournament_object.list_of_tours[0])
@@ -208,8 +209,8 @@ class StartTournament:
         
         # print(self.tournament_object.list_of_tours[0].__str__())
                
-        # for tour in range (self.tournament_object.number_of_rounds -1):
-        #     pass
+        for tour in range (self.tournament_object.number_of_rounds -1):
+            self.tour.sort_players_by_score()
 
     def select_a_tournament(self):
         display_tournament = pd.read_json("models/tournament.json")

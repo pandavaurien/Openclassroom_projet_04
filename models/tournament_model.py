@@ -144,15 +144,6 @@ class Tour:
         # self.view.display_score(Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds))
         
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
-
-    # def __str__(self):
-    #     print(f"{self.name}. Début : {self.begin_time} - Fin : {self.end_time}"
-    #           f"{self.list_of_finished_rounds}"
-    #          )
-
-    # def __repr__(self):
-    #     print(f"{self.name}. Début : {self.begin_time} - Fin : {self.end_time}"
-    #           f"{self.list_of_finished_rounds}")
           
     def sort_player_first_tour(self, tournament):
         players_serialized = []
@@ -184,18 +175,48 @@ class Tour:
 
     def sort_players_by_score(self):
         players_sorted_by_score = []
-        
+        players_sorted_flat = []
+        round_to_try = set()
+                        
         for round in self.list_of_finished_rounds:
             for player in round:
                 players_sorted_by_score.append(player)
-        
-        # def players_score(players_sorted_by_score):
-        #     return players_sorted_by_score[0][1]
 
-        print(players_sorted_by_score)
         players_sorted_by_score = sorted(players_sorted_by_score, key=itemgetter(1), reverse=True)
-
         print(players_sorted_by_score)
+                
+        for player in players_sorted_by_score:
+            player.pop()
+            players_sorted_flat.append(player[0])
+            
+        print(players_sorted_flat)
+        players_sorted_by_score.clear()
+
+        for player_1 in players_sorted_flat:
+            
+            player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+
+            if player_1 in players_sorted_by_score:
+                continue
+            
+            round_to_try.add(player_1) 
+            round_to_try.add(player_2) 
+
+            if round_to_try in Tour.MATCHS_PLAYED: # compare round_to_try avec les match déjà joués
+                print(f"Le match {round_to_try} a déjà eu lieu")
+                player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+                time.sleep(1)
+
+                # round_to_try.remove(player_2)
+                # player_to_try_index += 1
+            else:
+                print(f"Ajout du match {round_to_try}")
+                players_sorted_by_score.append(player_1)
+                players_sorted_by_score.append(player_2)
+                
+                round_to_try.clear()              
+                time.sleep(1)
+
 
 
 class Round:
