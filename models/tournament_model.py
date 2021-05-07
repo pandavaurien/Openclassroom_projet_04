@@ -1,6 +1,7 @@
 import time
 import datetime
 from operator import itemgetter
+from operator import attrgetter
 
 from tinydb import TinyDB, Query
 tournament_database = TinyDB('models/tournament.json')
@@ -101,11 +102,11 @@ class Tour:
         self.player = player_model.Player()
         self.round = Round()
         self.list_of_rounds = []
-        self.sorted_players = []
+        # self.sorted_players = []
         self.list_of_finished_rounds = []
         self.view = view_main.TourDisplay()
         
-    def __call__(self):
+    def __call__(self, sorted_players_list):
 
         self.name = "Tour n°" + str(Tour.TOUR_NUMBER)
         Tour.TOUR_NUMBER += 1
@@ -122,10 +123,10 @@ class Tour:
         print()
 
         # tant qu'il y a des joueurs dans la liste, ajoute des instances de 'Round' dans la liste 'list_of_rounds'
-        while len(self.sorted_players) > 0:
-            self.list_of_rounds.append(self.round.create_instance(self.sorted_players))
-            del self.sorted_players[0]
-            del self.sorted_players[0]
+        while len(sorted_players_list) > 0:
+            self.list_of_rounds.append(self.round.create_instance(sorted_players_list))
+            del sorted_players_list[0]
+            del sorted_players_list[0]
         
         self.view.display_tour(self.name, self.list_of_rounds)
 
@@ -146,6 +147,8 @@ class Tour:
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
           
     def sort_player_first_tour(self, tournament):
+        """ return a list of players sorted by ranking"""
+        sorted_players = []
         players_serialized = []
         id_list = tournament.players_ids
         
@@ -167,13 +170,15 @@ class Tour:
             joueur[1] contre joueur [5] etc..."""
             if index_player_1 + len(players_serialized) / 2 < len(players_serialized):
                 player_2 = self.player.unserialized(players_serialized[index_player_1 + int(len(players_serialized) / 2)])
-                self.sorted_players.append(player_1)
-                self.sorted_players.append(player_2)
+                sorted_players.append(player_1)
+                sorted_players.append(player_2)
                 Tour.MATCHS_PLAYED.append({player_1, player_2})
             else:
                 pass
+        return sorted_players
 
     def sort_players_by_score(self):
+        """ return a list of players sorted by score"""
         players_sorted_by_score = []
         players_sorted_flat = []
         round_to_try = set()
@@ -181,42 +186,49 @@ class Tour:
         for round in self.list_of_finished_rounds:
             for player in round:
                 players_sorted_by_score.append(player)
-
-        players_sorted_by_score = sorted(players_sorted_by_score, key=itemgetter(1), reverse=True)
         print(players_sorted_by_score)
-                
+
         for player in players_sorted_by_score:
             player.pop()
             players_sorted_flat.append(player[0])
-            
+
+        players_sorted_flat.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
+        print()
         print(players_sorted_flat)
-        players_sorted_by_score.clear()
 
-        for player_1 in players_sorted_flat:
-            
-            player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
-
-            if player_1 in players_sorted_by_score:
-                continue
-            
-            round_to_try.add(player_1) 
-            round_to_try.add(player_2) 
-
-            if round_to_try in Tour.MATCHS_PLAYED: # compare round_to_try avec les match déjà joués
-                print(f"Le match {round_to_try} a déjà eu lieu")
-                player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
-                time.sleep(1)
-
-                # round_to_try.remove(player_2)
-                # player_to_try_index += 1
-            else:
-                print(f"Ajout du match {round_to_try}")
-                players_sorted_by_score.append(player_1)
-                players_sorted_by_score.append(player_2)
+        
                 
-                round_to_try.clear()              
-                time.sleep(1)
+        
+            
+        # print(players_sorted_flat)
+        # players_sorted_by_score.clear()
 
+        # for player_1 in players_sorted_flat:
+            
+        #     player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+
+        #     if player_1 in players_sorted_by_score:
+        #         continue
+            
+        #     round_to_try.add(player_1) 
+        #     round_to_try.add(player_2) 
+
+        #     if round_to_try in Tour.MATCHS_PLAYED: # compare round_to_try avec les match déjà joués
+        #         print(f"Le match {round_to_try} a déjà eu lieu")
+        #         player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+        #         time.sleep(1)
+
+        #         # round_to_try.remove(player_2)
+        #         # player_to_try_index += 1
+        #     else:
+        #         print(f"Ajout du match {round_to_try}")
+        #         players_sorted_by_score.append(player_1)
+        #         players_sorted_by_score.append(player_2)
+                
+        #         round_to_try.clear()              
+        #         time.sleep(1)
+
+        return players_sorted_by_score
 
 
 class Round:
