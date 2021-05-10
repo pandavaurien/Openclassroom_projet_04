@@ -59,37 +59,14 @@ class TourDisplay:
             print(round.__str__())
         print()
 
-    # Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
-    # self.list_of_finished_rounds.append(([round.player_1, score_player_1], [round.player_2, score_player_2]))
 
-    # def display_score(self, tour_instance):
-    #     print(f"---------------{tour_instance.name}---------------\n"
-    #           f"Heure de début : {tour_instance.begin_time}\n"
-    #           f"Heure de fin : {tour_instance.end_time}\n")
-    #     print(f"{tour_instance.list_of_finished_rounds}")
-
-    #     for tple in tour_instance.list_of_finished_rounds:
-    #         for lst in tple:
-    #             print(lst[0], lst[1])
-
-        
-
-            
-
-
-        
-        
-# class PlayersDisplay:
-#     """Display all the players"""
-#     def __call__(self):
-#         display_players_database = pd.read_json("models/players.json")
-#         print(display_players_database)
-
-
-# class TournamentDisplay:
-#     """Display all the tournament"""
-#     def __call__(self):
-#         display_tournament_database = pd.read_json("models/players.json")
-#         print(display_players_database)
-
-
+class EndTournamentDisplay:
+    """Display the final score at the end of the tournament"""
+    def __call__(self, tournament_instance):
+        print("------------------------------------------------\n"
+              "-----------------Fin du tournoi-----------------\n"
+              "------------------------------------------------\n"
+              "-------------------Résultats--------------------\n"
+              "------------------------------------------------\n")
+        for i in tournament_instance.list_of_tours:
+            print(i)

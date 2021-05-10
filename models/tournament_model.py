@@ -33,7 +33,7 @@ class Tournament:
         self.players_ids = players_ids
         self.list_of_tours = []
 
-        self.players_in_tournament = []
+        # self.players_in_tournament = []
         self.player_database = player_model.player_database
         self.home_menu_controller = main_control.HomeMenuController
         self.player_model = player_model.Player()
@@ -102,7 +102,6 @@ class Tour:
         self.player = player_model.Player()
         self.round = Round()
         self.list_of_rounds = []
-        # self.sorted_players = []
         self.list_of_finished_rounds = []
         self.view = view_main.TourDisplay()
         
@@ -138,13 +137,7 @@ class Tour:
             score_player_2 = input(f"Entrez le score de {round.player_2} :")
             round.player_2.tournament_score += float(score_player_2)
             self.list_of_finished_rounds.append(([round.player_1, round.player_1.tournament_score], [round.player_2, round.player_2.tournament_score]))
-        # print()
-        # print("Score :" + str(self.list_of_finished_rounds))
-        # print()
-        # print("Matchs déja joués : " + str(Tour.MATCHS_PLAYED))
-        # print()
-
-        # self.view.display_score(Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds))
+        print()
         self.list_of_rounds.clear()
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
           
@@ -184,7 +177,6 @@ class Tour:
         players_sorted_by_score = []
         players_sorted_flat = []
         round_to_try = set()
-        match_already_played = False
     
         for round in self.list_of_finished_rounds:
             for player in round:
@@ -197,12 +189,7 @@ class Tour:
 
         #Sort players by score, if score are equals, sort by rank.
         players_sorted_flat.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
-        # print()
-        # print(players_sorted_flat)
         players_sorted_by_score.clear()
-
-        # faire une fonction récursive, qui prends les joueurs en paramètres et les renvoient si le match est valide
-        # def try_rounds(self, player_1, player_2):
 
         for player_1 in players_sorted_flat:
 
@@ -224,21 +211,11 @@ class Tour:
                 player_2 = players_sorted_flat[players_sorted_flat.index(player_2) + 1]
                 round_to_try.add(player_2)
                 continue
-
-                # else:
-                #     round_to_try.add(player_2)
-                #     print(f"Pas d'autres solutions, ajout du match {round_to_try}")
-                #     players_sorted_by_score.append(player_1)
-                #     players_sorted_by_score.append(player_2)
-                #     Tour.MATCHS_PLAYED.append({player_1, player_2})
-                #     round_to_try.clear()              
-                #     time.sleep(1)
                     
             else:
                 print(f"Ajout du match {round_to_try}")
                 players_sorted_by_score.append(player_1)
                 players_sorted_by_score.append(player_2)
-                # players_sorted_flat.pop(players_sorted_flat.index(player_1))
                 players_sorted_flat.pop(players_sorted_flat.index(player_2))
                 Tour.MATCHS_PLAYED.append({player_1, player_2})
                 round_to_try.clear()              
@@ -260,9 +237,7 @@ class Round:
         self.name = name
         self.player_1 = player_1
         self.player_2 = player_2
-        # self.score_joueur_1 = score_joueur_1
-        # self.score_joueur_2 = score_joueur_2
-
+        
     def create_instance(self, list_of_player):
         player_1 = list_of_player[0]
         player_2 = list_of_player[1]    

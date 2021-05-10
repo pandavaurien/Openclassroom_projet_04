@@ -1,4 +1,6 @@
 import time
+from operator import itemgetter
+from operator import attrgetter
 
 import pandas as pd
 
@@ -194,20 +196,30 @@ class StartTournament:
         self.tournament = tournament_model.Tournament()
         self.tournament_object = None
         self.view_tour = view_main.TourDisplay()
+        self.view_final_scores = view_main.EndTournamentDisplay()
         self.sorted_players = []
-    
+            
     def __call__(self):
         self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
         self.sorted_players = self.tour.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
         self.tournament_object.list_of_tours.append(self.tour(self.sorted_players)) # 1er tour, joueurs triés par classement, copie l'instance de tour dans tournament
-        # self.tour.list_of_finished_rounds.clear()
         
         for tour in range (self.tournament_object.number_of_rounds -1):
             self.sorted_players.clear()
-            
             self.sorted_players = self.tour.sort_players_by_score()
             self.tournament_object.list_of_tours.append(self.tour(self.sorted_players))
+        print(self.sorted_players)
 
+        # for id in self.tournament_object.players_ids:
+        #     player = player_model.player_database.get(doc_id=id) 
+        #     self.sorted_players.append(player)
+
+        #     for player in players_serialized:
+        #     player_1 = self.player.unserialized(player)
+        #     index_player_1 = players_serialized.index(player)
+        # self.sorted_players.sort(key=itemgetter(5), reverse=True)
+
+        self.view_final_scores(self.tournament_object)
                
     def select_a_tournament(self):
         display_tournament = pd.read_json("models/tournament.json")
@@ -227,7 +239,6 @@ class StartTournament:
             else:
                 choosen_tournament = tournament_model.tournament_database.get(doc_id=int(choice))
                 tournament_object = self.tournament.unserialized(choosen_tournament)
-                # print(tournament_object.__str__())
                 return tournament_object
     
 
