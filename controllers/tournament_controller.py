@@ -199,18 +199,16 @@ class StartTournament:
     def __call__(self):
         self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
         self.sorted_players = self.tour.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
-        self.tournament_object.list_of_tours.append(self.tour(self.sorted_players)) # 1er tour, joueurs triés par classement
-        self.sorted_players.clear()        
-        self.tournament_object.list_of_tours.append(self.tour.sort_players_by_score())
+        self.tournament_object.list_of_tours.append(self.tour(self.sorted_players)) # 1er tour, joueurs triés par classement, copie l'instance de tour dans tournament
+        # self.tour.list_of_finished_rounds.clear()
         
-        # tour_instance = self.tour()
-        # print(tour_instance.__str__())
-        # self.view_tour.display_score(self.tournament_object.list_of_tours[0])
-        # print(self.tournament_object.list_of_tours[0].__str__())
-               
         for tour in range (self.tournament_object.number_of_rounds -1):
-            pass
+            self.sorted_players.clear()
+            
+            self.sorted_players = self.tour.sort_players_by_score()
+            self.tournament_object.list_of_tours.append(self.tour(self.sorted_players))
 
+               
     def select_a_tournament(self):
         display_tournament = pd.read_json("models/tournament.json")
         print(display_tournament)

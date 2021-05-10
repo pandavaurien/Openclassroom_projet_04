@@ -107,10 +107,12 @@ class Tour:
         self.view = view_main.TourDisplay()
         
     def __call__(self, sorted_players_list):
-
+        
+        self.list_of_finished_rounds.clear()
         self.name = "Tour n°" + str(Tour.TOUR_NUMBER)
         Tour.TOUR_NUMBER += 1
-
+        
+        print()
         input("Appuyez sur une touche pour commencer le tour")
         print()
         self.begin_time = datetime.datetime.now()
@@ -136,14 +138,14 @@ class Tour:
             score_player_2 = input(f"Entrez le score de {round.player_2} :")
             round.player_2.tournament_score += float(score_player_2)
             self.list_of_finished_rounds.append(([round.player_1, round.player_1.tournament_score], [round.player_2, round.player_2.tournament_score]))
-        print()
-        print("Score :" + str(self.list_of_finished_rounds))
-        print()
-        print("Matchs déja joués : " + str(Tour.MATCHS_PLAYED))
-        print()
+        # print()
+        # print("Score :" + str(self.list_of_finished_rounds))
+        # print()
+        # print("Matchs déja joués : " + str(Tour.MATCHS_PLAYED))
+        # print()
 
         # self.view.display_score(Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds))
-        
+        self.list_of_rounds.clear()
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
           
     def sort_player_first_tour(self, tournament):
@@ -164,10 +166,10 @@ class Tour:
             player_1 = self.player.unserialized(player)
             index_player_1 = players_serialized.index(player)
 
-            """ Je divise le nombre de joueurs par 2, et j'ajoute le résultat à l'indice
-            exemple : Pour 8 joueurs, j'ajoute 4 au premier indice,
-            joueur[0] contre joueur [4],
-            joueur[1] contre joueur [5] etc..."""
+            """ I divide the number of players by 2, and I add the result to the index
+            example : For 8 players, I add 4 to the first index,
+            player[0] against player [4],
+            player[1] against player [5] etc..."""
             if index_player_1 + len(players_serialized) / 2 < len(players_serialized):
                 player_2 = self.player.unserialized(players_serialized[index_player_1 + int(len(players_serialized) / 2)])
                 sorted_players.append(player_1)
@@ -182,51 +184,65 @@ class Tour:
         players_sorted_by_score = []
         players_sorted_flat = []
         round_to_try = set()
-                        
+        match_already_played = False
+    
         for round in self.list_of_finished_rounds:
             for player in round:
                 players_sorted_by_score.append(player)
-        print(players_sorted_by_score)
+        # print(players_sorted_by_score)
 
         for player in players_sorted_by_score:
             player.pop()
             players_sorted_flat.append(player[0])
 
+        #Sort players by score, if score are equals, sort by rank.
         players_sorted_flat.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
-        print()
-        print(players_sorted_flat)
-
-        
-                
-        
-            
+        # print()
         # print(players_sorted_flat)
-        # players_sorted_by_score.clear()
+        players_sorted_by_score.clear()
 
-        # for player_1 in players_sorted_flat:
-            
-        #     player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+        # faire une fonction récursive, qui prends les joueurs en paramètres et les renvoient si le match est valide
+        # def try_rounds(self, player_1, player_2):
 
-        #     if player_1 in players_sorted_by_score:
-        #         continue
-            
-        #     round_to_try.add(player_1) 
-        #     round_to_try.add(player_2) 
+        for player_1 in players_sorted_flat:
 
-        #     if round_to_try in Tour.MATCHS_PLAYED: # compare round_to_try avec les match déjà joués
-        #         print(f"Le match {round_to_try} a déjà eu lieu")
-        #         player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
-        #         time.sleep(1)
+            if player_1 in players_sorted_by_score:
+                continue
+            else:
+                try:
+                    player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+                except:
+                    break
+                            
+            round_to_try.add(player_1) 
+            round_to_try.add(player_2) 
 
-        #         # round_to_try.remove(player_2)
-        #         # player_to_try_index += 1
-        #     else:
-        #         print(f"Ajout du match {round_to_try}")
-        #         players_sorted_by_score.append(player_1)
-        #         players_sorted_by_score.append(player_2)
-                
-        #         round_to_try.clear()              
-        #         time.sleep(1)
+            while round_to_try in Tour.MATCHS_PLAYED: # compare round_to_try avec les match déjà joués    
+                print(f"Le match {round_to_try} a déjà eu lieu")
+                time.sleep(1)
+                round_to_try.remove(player_2)                
+                player_2 = players_sorted_flat[players_sorted_flat.index(player_2) + 1]
+                round_to_try.add(player_2)
+                continue
+
+                # else:
+                #     round_to_try.add(player_2)
+                #     print(f"Pas d'autres solutions, ajout du match {round_to_try}")
+                #     players_sorted_by_score.append(player_1)
+                #     players_sorted_by_score.append(player_2)
+                #     Tour.MATCHS_PLAYED.append({player_1, player_2})
+                #     round_to_try.clear()              
+                #     time.sleep(1)
+                    
+            else:
+                print(f"Ajout du match {round_to_try}")
+                players_sorted_by_score.append(player_1)
+                players_sorted_by_score.append(player_2)
+                # players_sorted_flat.pop(players_sorted_flat.index(player_1))
+                players_sorted_flat.pop(players_sorted_flat.index(player_2))
+                Tour.MATCHS_PLAYED.append({player_1, player_2})
+                round_to_try.clear()              
+                time.sleep(1)
 
         return players_sorted_by_score
 
