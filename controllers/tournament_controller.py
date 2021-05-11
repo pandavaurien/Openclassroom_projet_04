@@ -193,6 +193,7 @@ class CreateTournamentController:
         self.add_players_to_tournament()
         
         # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
+        # et copie les joueurs sérialisés dans la base de données du tournoi.
         for id in self.players_ids:
             player = player_model.player_database.get(doc_id=id) 
             self.players_serialized.append(player)
@@ -225,25 +226,7 @@ class StartTournament:
             self.sorted_players = self.sort_players_by_score()
             self.tournament_object.list_of_tours.append(self.tour(self.sorted_players))
 
-        
-        
-        # tournament_db = tournament_model.tournament_database.get(doc_id=self.tournament_object)
-
-        # self.tournament_object = self.tournament(list_of_tours=self.tournament_object.list_of_tours)
-
-        
-        
-
-        # for id in self.tournament_object.players_ids:
-        #     player = player_model.player_database.get(doc_id=id) 
-        #     self.sorted_players.append(player)
-
-        #     for player in players_serialized:
-        #     player_1 = self.player.unserialized(player)
-        #     index_player_1 = players_serialized.index(player)
-        # self.sorted_players.sort(key=itemgetter(5), reverse=True)
-
-        self.view_final_scores(self.tournament_object)
+        self.view_final_scores(self.tournament_object, self.sorted_players)
                
     def select_a_tournament(self):
         display_tournament = pd.read_json("models/tournament.json")
@@ -269,18 +252,21 @@ class StartTournament:
         sorted_players = []
         players_serialized = []
         id_list = tournament.players_ids
-        db_tournament = Query()
         
-        # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
-        for id in id_list:
-            player = player_model.player_database.get(doc_id=id) 
-            players_serialized.append(player)
-        players_serialized.sort(key=itemgetter("Classement"), reverse=True)
+        
+        # # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
+        # for id in id_list:
+        #     player = player_model.player_database.get(doc_id=id) 
+        #     players_serialized.append(player)
+        # players_serialized.sort(key=itemgetter("Classement"), reverse=True)
 
+        players_serialized = tournament.list_of_players
+        # print(players_serialized)
+        
         # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
         for player in players_serialized:
             player_1 = self.player.unserialized(player)
-            self.tournament.unserialized(tournament)
+            # self.tournament.unserialized(tournament)
             index_player_1 = players_serialized.index(player)
 
             """ I divide the number of players by 2, and I add the result to the index
@@ -294,6 +280,7 @@ class StartTournament:
                 self.MATCHS_PLAYED.append({player_1, player_2})
             else:
                 pass
+            
         return sorted_players
 
     def sort_players_by_score(self):

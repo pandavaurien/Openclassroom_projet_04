@@ -80,11 +80,13 @@ class TourDisplay:
 
 class EndTournamentDisplay:
     """Display the final score at the end of the tournament"""
-    def __call__(self, tournament_instance):
+    def __call__(self, tournament_instance, players_instance_list):
         print("------------------------------------------------\n"
               "-----------------Fin du tournoi-----------------\n"
               "------------------------------------------------\n"
               "-------------------Résultats--------------------\n"
               "------------------------------------------------\n")
-        for i in tournament_instance.list_of_tours:
+        for i in tournament_instance.list_of_players:
             print(i)
+        print(players_instance_list)
+        print(tournament_instance)

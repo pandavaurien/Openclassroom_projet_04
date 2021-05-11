@@ -1,15 +1,10 @@
 import time
 
-# from operator import itemgetter
-# from operator import attrgetter
-
-from tinydb import TinyDB, Query
-
+from tinydb import TinyDB
 
 from views import view_main
 from controllers import main_control
 from models import player_model
-# from controllers import tournament_controller
 
 tournament_database = TinyDB('models/tournament.json')
 
@@ -36,15 +31,14 @@ class Tournament:
         self.description = description
         self.players_ids = players_ids
         self.list_of_players = list_of_players
-        self.list_of_tours = list_of_tours
+        self.list_of_tours = []
         
-
         self.player_database = player_model.player_database
         self.home_menu_controller = main_control.HomeMenuController
         self.player_model = player_model.Player()
 
-    # def __str__(self):
-    #     print(f"{self.tournament_name} - {self.list_of_tours}")
+    def __str__(self):
+        return f"{self.tournament_name} - {self.list_of_tours}"
         
     def serialized(self):
         tournament_infos = {}
@@ -136,10 +130,31 @@ class Tour:
         self.view.display_tour(self.name, self.list_of_rounds)
 
         for round in self.list_of_rounds:
-            score_player_1 = input(f"Entrez le score de {round.player_1} :") #TODO faire une fonction pour vérifier l'input
-            round.player_1.tournament_score += float(score_player_1)
-            score_player_2 = input(f"Entrez le score de {round.player_2} :")
-            round.player_2.tournament_score += float(score_player_2)
+            
+            valid_score_player_1 = False
+            while not valid_score_player_1:
+                try:
+                    score_player_1 = input(f"Entrez le score de {round.player_1} :")  
+                    float(score_player_1)
+                    0 <float(score_player_1) <= 1
+                except Exception:
+                    print("Vous devez entrer 0, 0.5, ou 1")
+                else:
+                    round.player_1.tournament_score += float(score_player_1)
+                    valid_score_player_1 = True
+
+            valid_score_player_2 = False
+            while not valid_score_player_2:
+                try:
+                    score_player_2 = input(f"Entrez le score de {round.player_2} :")  
+                    float(score_player_2)
+                    0 <float(score_player_2) <= 1
+                except Exception:
+                    print("Vous devez entrer 0, 0.5, ou 1")
+                else:
+                    round.player_2.tournament_score += float(score_player_2)
+                    valid_score_player_2 = True
+
             self.list_of_finished_rounds.append(([round.player_1, round.player_1.tournament_score], [round.player_2, round.player_2.tournament_score]))
         print()
         self.list_of_rounds.clear()
