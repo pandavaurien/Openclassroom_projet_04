@@ -1,15 +1,17 @@
 import time
-import datetime
-from operator import itemgetter
-from operator import attrgetter
+
+# from operator import itemgetter
+# from operator import attrgetter
 
 from tinydb import TinyDB, Query
-tournament_database = TinyDB('models/tournament.json')
+
 
 from views import view_main
 from controllers import main_control
 from models import player_model
-from controllers import tournament_controller
+# from controllers import tournament_controller
+
+tournament_database = TinyDB('models/tournament.json')
 
 
 class Tournament:
@@ -21,7 +23,9 @@ class Tournament:
                        time_control=None, 
                        description=None,
                        players_ids=None,
+                       list_of_players=None,
                        list_of_tours=None
+                       
                        ):
 
         self.tournament_name = tournament_name
@@ -31,9 +35,10 @@ class Tournament:
         self.time_control = time_control
         self.description = description
         self.players_ids = players_ids
-        self.list_of_tours = []
+        self.list_of_players = list_of_players
+        self.list_of_tours = list_of_tours
+        
 
-        # self.players_in_tournament = []
         self.player_database = player_model.player_database
         self.home_menu_controller = main_control.HomeMenuController
         self.player_model = player_model.Player()
@@ -49,7 +54,10 @@ class Tournament:
         tournament_infos['Nombre de match'] = self.number_of_rounds
         tournament_infos['Contrôle du temps'] = self.time_control
         tournament_infos['Description'] = self.description
-        tournament_infos["Joueurs"] = self.players_ids
+        tournament_infos["Joueurs_id"] = self.players_ids
+        tournament_infos["Liste de joueurs"] = self.list_of_players
+        tournament_infos["Tours"] = self.list_of_tours
+        
         return tournament_infos
 
     def unserialized(self, serialized_tournament):
@@ -59,14 +67,19 @@ class Tournament:
         number_of_rounds = serialized_tournament['Nombre de match']
         time_control = serialized_tournament['Contrôle du temps']
         description = serialized_tournament['Description']
-        players_ids = serialized_tournament["Joueurs"]
+        players_ids = serialized_tournament["Joueurs_id"]
+        list_of_players = serialized_tournament["Liste de joueurs"]
+        list_of_tours =serialized_tournament["Tours"]
+        
         return Tournament(tournament_name, 
                           location,
                           tournament_date,
                           number_of_rounds, 
                           time_control,
                           description,
-                          players_ids
+                          players_ids,
+                          list_of_players,
+                          list_of_tours                          
                           )
 
     def add_to_database(self, tournament_values):
@@ -76,7 +89,8 @@ class Tournament:
                                 tournament_values[3],
                                 tournament_values[4],
                                 tournament_values[5],
-                                tournament_values[6]
+                                tournament_values[6],
+                                tournament_values[7]
                                 )
         tournament_database.insert(tournament.serialized())        
 
@@ -93,7 +107,7 @@ class Tour:
     Renvoi l'instance de tour
     """
     TOUR_NUMBER = 1
-    MATCHS_PLAYED = []
+    
 
     def __init__(self, name=None, begin_time=None, end_time=None, list_of_finished_rounds=None):
         self.name = name
@@ -111,17 +125,7 @@ class Tour:
         self.name = "Tour n°" + str(Tour.TOUR_NUMBER)
         Tour.TOUR_NUMBER += 1
         
-        print()
-        input("Appuyez sur une touche pour commencer le tour")
-        print()
-        self.begin_time = datetime.datetime.now()
-        print(f"Début du tour : {self.begin_time}")
-        print()
-        input("Appuyez sur une touche lorsque le tour est terminé")
-        print()
-        self.end_time = datetime.datetime.now()
-        print(f"Fin du tour : {self.end_time}")
-        print()
+        self.begin_time, self.end_time = self.view.display_tournament_time()
 
         # tant qu'il y a des joueurs dans la liste, ajoute des instances de 'Round' dans la liste 'list_of_rounds'
         while len(sorted_players_list) > 0:
@@ -141,89 +145,7 @@ class Tour:
         self.list_of_rounds.clear()
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
           
-    def sort_player_first_tour(self, tournament):
-        """ return a list of players sorted by ranking"""
-        sorted_players = []
-        players_serialized = []
-        id_list = tournament.players_ids
-        
-        # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
-        for id in id_list:
-            player = player_model.player_database.get(doc_id=id) 
-            players_serialized.append(player)
-        players_serialized.sort(key=itemgetter("Classement"), reverse=True)
-
-        # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
-        # et copie chaque instance dans la liste 'sorted_player'
-        for player in players_serialized:
-            player_1 = self.player.unserialized(player)
-            index_player_1 = players_serialized.index(player)
-
-            """ I divide the number of players by 2, and I add the result to the index
-            example : For 8 players, I add 4 to the first index,
-            player[0] against player [4],
-            player[1] against player [5] etc..."""
-            if index_player_1 + len(players_serialized) / 2 < len(players_serialized):
-                player_2 = self.player.unserialized(players_serialized[index_player_1 + int(len(players_serialized) / 2)])
-                sorted_players.append(player_1)
-                sorted_players.append(player_2)
-                Tour.MATCHS_PLAYED.append({player_1, player_2})
-            else:
-                pass
-        return sorted_players
-
-    def sort_players_by_score(self):
-        """ return a list of players sorted by score"""
-        players_sorted_by_score = []
-        players_sorted_flat = []
-        round_to_try = set()
     
-        for round in self.list_of_finished_rounds:
-            for player in round:
-                players_sorted_by_score.append(player)
-        # print(players_sorted_by_score)
-
-        for player in players_sorted_by_score:
-            player.pop()
-            players_sorted_flat.append(player[0])
-
-        #Sort players by score, if score are equals, sort by rank.
-        players_sorted_flat.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
-        players_sorted_by_score.clear()
-
-        for player_1 in players_sorted_flat:
-
-            if player_1 in players_sorted_by_score:
-                continue
-            else:
-                try:
-                    player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
-                except:
-                    break
-                            
-            round_to_try.add(player_1) 
-            round_to_try.add(player_2) 
-
-            while round_to_try in Tour.MATCHS_PLAYED: # compare round_to_try avec les match déjà joués    
-                print(f"Le match {round_to_try} a déjà eu lieu")
-                time.sleep(1)
-                round_to_try.remove(player_2)                
-                player_2 = players_sorted_flat[players_sorted_flat.index(player_2) + 1]
-                round_to_try.add(player_2)
-                continue
-                    
-            else:
-                print(f"Ajout du match {round_to_try}")
-                players_sorted_by_score.append(player_1)
-                players_sorted_by_score.append(player_2)
-                players_sorted_flat.pop(players_sorted_flat.index(player_2))
-                Tour.MATCHS_PLAYED.append({player_1, player_2})
-                round_to_try.clear()              
-                time.sleep(1)
-
-        return players_sorted_by_score
-
-
 class Round:
     """
     Un match unique doit être stocké sous la forme d'un tuple contenant deux listes,

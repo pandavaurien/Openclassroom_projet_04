@@ -3,6 +3,7 @@ from operator import itemgetter
 from operator import attrgetter
 
 import pandas as pd
+from tinydb import Query
 
 from controllers import main_control
 from controllers import create_menus
@@ -10,18 +11,20 @@ from models import tournament_model
 from models import player_model
 from views import view_main
 
+
 class CreateTournamentController:
     """docstring"""
     
     def __init__(self):
         self.create_menu = create_menus.CreateMenus()
         self.tournament_values = []
-        # self.tournament_keys = ["Nom", "Lieu", "Date", "Nombre de tours", "Contrôle du temps", "Description", "Joueurs"]
         self.players_in_tournament = []
+        self.players_ids = []
+        self.players_serialized = []
         self.player = player_model.Player()
         self.home_menu_controller = main_control.HomeMenuController()
         self.tournament = tournament_model.Tournament()
-        
+                
     def __call__(self):
         self.tournament_values.append(self.add_tournament_name())
         self.tournament_values.append(self.add_location())
@@ -127,7 +130,7 @@ class CreateTournamentController:
         """Add the ids of the selected players in a list, en return the list"""
         view_main.ClearScreen()
         id_choice = None
-
+        
         valid_add_player_choice = False
         while not valid_add_player_choice:
             add_player_choice = input("\nVoulez-vous ajouter un joueur ?\n\n"
@@ -139,7 +142,7 @@ class CreateTournamentController:
             else:
                 print("Appuyez sur 'Y' ou 'N'")
 
-        if len(self.players_in_tournament) >= 8: 
+        if len(self.players_ids) >= 8: 
             print()
             print("Vous avez déjà 8 joueurs dans le tournoi")
             time.sleep(2)
@@ -150,7 +153,7 @@ class CreateTournamentController:
         print()
         print("Vous devez choisir 8 joueurs maximum pour un tournoi")
         print()
-        print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
+        print("Joueurs dans le tournoi : " + str(self.players_ids))
         print()
         print("Entrez le numéro du joueur :")
         
@@ -168,32 +171,45 @@ class CreateTournamentController:
             print()
             print("vous devez choisir un joueur dans la liste")
             print()
-            print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
+            print("Joueurs dans le tournoi : " + str(self.players_ids))
             time.sleep(1)
             self.add_players_to_tournament()
      
         if id_choice in self.players_in_tournament:
             print("\nVous avez déjà choisi ce joueur dans ce tournoi\n")
-            print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
+            print("Joueurs dans le tournoi : " + str(self.players_ids))
             print()
             time.sleep(1)
             self.add_players_to_tournament()
 
-        try:
-            len(self.players_in_tournament) % 2 != 0
-        except Exception:
-            print("Vous devez avoir un nombre de joueurs pair")
+        # if len(self.players_ids) % 2 != 0:
+        #     print("Vous devez avoir un nombre de joueurs pair")
+        #     print()
+        #     time.sleep(1)
+        #     self.add_players_to_tournament()
 
-        self.players_in_tournament.append(id_choice)
-        print("Joueurs dans le tournoi : " + str(self.players_in_tournament))
+        self.players_ids.append(id_choice)
+        print("Joueurs dans le tournoi : " + str(self.players_ids))
         self.add_players_to_tournament()
-
-
+        
+        # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
+        for id in self.players_ids:
+            player = player_model.player_database.get(doc_id=id) 
+            self.players_serialized.append(player)
+        self.players_serialized.sort(key=itemgetter("Classement"), reverse=True)
+        self.tournament_values.append(self.players_ids.copy())
+        self.tournament_values.append(self.players_serialized.copy())
+        
+        
 class StartTournament:
     """Docstring"""
+
+    MATCHS_PLAYED = []
+
     def __init__(self):
         self.tour = tournament_model.Tour()
         self.tournament = tournament_model.Tournament()
+        self.player = player_model.Player()
         self.tournament_object = None
         self.view_tour = view_main.TourDisplay()
         self.view_final_scores = view_main.EndTournamentDisplay()
@@ -201,14 +217,22 @@ class StartTournament:
             
     def __call__(self):
         self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
-        self.sorted_players = self.tour.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
+        self.sorted_players = self.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
         self.tournament_object.list_of_tours.append(self.tour(self.sorted_players)) # 1er tour, joueurs triés par classement, copie l'instance de tour dans tournament
         
-        for tour in range (self.tournament_object.number_of_rounds -1):
+        for tour in range(self.tournament_object.number_of_rounds -1):
             self.sorted_players.clear()
-            self.sorted_players = self.tour.sort_players_by_score()
+            self.sorted_players = self.sort_players_by_score()
             self.tournament_object.list_of_tours.append(self.tour(self.sorted_players))
-        print(self.sorted_players)
+
+        
+        
+        # tournament_db = tournament_model.tournament_database.get(doc_id=self.tournament_object)
+
+        # self.tournament_object = self.tournament(list_of_tours=self.tournament_object.list_of_tours)
+
+        
+        
 
         # for id in self.tournament_object.players_ids:
         #     player = player_model.player_database.get(doc_id=id) 
@@ -235,11 +259,100 @@ class StartTournament:
                 int(choice) <= 0
             except Exception:
                 print("Vous devez entrer le chiffre correspondant au tournoi")
-            
             else:
                 choosen_tournament = tournament_model.tournament_database.get(doc_id=int(choice))
                 tournament_object = self.tournament.unserialized(choosen_tournament)
                 return tournament_object
+
+    def sort_player_first_tour(self, tournament):
+        """ return a list of players sorted by ranking"""
+        sorted_players = []
+        players_serialized = []
+        id_list = tournament.players_ids
+        db_tournament = Query()
+        
+        # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
+        for id in id_list:
+            player = player_model.player_database.get(doc_id=id) 
+            players_serialized.append(player)
+        players_serialized.sort(key=itemgetter("Classement"), reverse=True)
+
+        # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
+        for player in players_serialized:
+            player_1 = self.player.unserialized(player)
+            self.tournament.unserialized(tournament)
+            index_player_1 = players_serialized.index(player)
+
+            """ I divide the number of players by 2, and I add the result to the index
+            example : For 8 players, I add 4 to the first index,
+            player[0] against player [4],
+            player[1] against player [5] etc..."""
+            if index_player_1 + len(players_serialized) / 2 < len(players_serialized):
+                player_2 = self.player.unserialized(players_serialized[index_player_1 + int(len(players_serialized) / 2)])
+                sorted_players.append(player_1)
+                sorted_players.append(player_2)
+                self.MATCHS_PLAYED.append({player_1, player_2})
+            else:
+                pass
+        return sorted_players
+
+    def sort_players_by_score(self):
+        """ return a list of players sorted by score"""
+        players_sorted_by_score = []
+        players_sorted_flat = []
+        round_to_try = set()
+    
+        for round in self.tour.list_of_finished_rounds:
+            for player in round:
+                players_sorted_by_score.append(player)
+        # print(players_sorted_by_score)
+
+        for player in players_sorted_by_score:
+            player.pop()
+            players_sorted_flat.append(player[0])
+
+        #Sort players by score, if score are equals, sort by rank.
+        players_sorted_flat.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
+        players_sorted_by_score.clear()
+
+        for player_1 in players_sorted_flat:
+
+            if player_1 in players_sorted_by_score:
+                continue
+            else:
+                try:
+                    player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+                except:
+                    break
+                            
+            round_to_try.add(player_1) 
+            round_to_try.add(player_2) 
+
+            while round_to_try in self.MATCHS_PLAYED: # compare round_to_try avec les match déjà joués    
+                print(f"Le match {round_to_try} a déjà eu lieu")
+                time.sleep(1)
+                round_to_try.remove(player_2)                
+                try:
+                    player_2 = players_sorted_flat[players_sorted_flat.index(player_2) + 1]
+                except:
+                    break
+                round_to_try.add(player_2)
+                continue
+                    
+            else:
+                print(f"Ajout du match {round_to_try}")
+                players_sorted_by_score.append(player_1)
+                players_sorted_by_score.append(player_2)
+                players_sorted_flat.pop(players_sorted_flat.index(player_2))
+                self.MATCHS_PLAYED.append({player_1, player_2})
+                round_to_try.clear()              
+                time.sleep(1)
+
+        return players_sorted_by_score
+
+    class TournamentReport:
+        pass
+
     
 
 

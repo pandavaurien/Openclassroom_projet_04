@@ -1,3 +1,4 @@
+import datetime
 from os import system, name
 import pandas as pd
 
@@ -20,6 +21,7 @@ class MainDisplay:
               "------------------------------------------------\n"
               )
     
+
 
 class ClearScreen:
     """Clear the terminal"""
@@ -58,6 +60,22 @@ class TourDisplay:
         for round in list_of_rounds:
             print(round.__str__())
         print()
+
+    def display_tournament_time(self):
+
+        print()
+        input("Appuyez sur une touche pour commencer le tour")
+        print()
+        begin_time = datetime.datetime.now()
+        print(f"Début du tour : {begin_time}")
+        print()
+        input("Appuyez sur une touche lorsque le tour est terminé")
+        print()
+        end_time = datetime.datetime.now()
+        print(f"Fin du tour : {end_time}")
+        print()
+        return begin_time, end_time
+
 
 
 class EndTournamentDisplay:
