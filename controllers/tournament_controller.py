@@ -146,7 +146,7 @@ class CreateTournamentController:
             print()
             print("Vous avez déjà 8 joueurs dans le tournoi")
             time.sleep(2)
-            self.home_menu_controller()
+            self.add_players_to_tournament()
 
         display_players_database = pd.read_json("models/players.json")
         print(display_players_database)
@@ -175,7 +175,7 @@ class CreateTournamentController:
             time.sleep(1)
             self.add_players_to_tournament()
      
-        if id_choice in self.players_in_tournament:
+        if id_choice in self.players_ids:
             print("\nVous avez déjà choisi ce joueur dans ce tournoi\n")
             print("Joueurs dans le tournoi : " + str(self.players_ids))
             print()
@@ -221,12 +221,12 @@ class StartTournament:
         self.sorted_players = self.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
         self.tournament_object.list_of_tours.append(self.tour(self.sorted_players)) # 1er tour, joueurs triés par classement, copie l'instance de tour dans tournament
         
-        for tour in range(self.tournament_object.number_of_rounds -1):
+        for tour in range(int(self.tournament_object.number_of_rounds) -1):
             self.sorted_players.clear()
             self.sorted_players = self.sort_players_by_score()
             self.tournament_object.list_of_tours.append(self.tour(self.sorted_players))
 
-        self.view_final_scores(self.tournament_object, self.sorted_players)
+        self.view_final_scores(self.tournament_object)
                
     def select_a_tournament(self):
         display_tournament = pd.read_json("models/tournament.json")
@@ -251,18 +251,9 @@ class StartTournament:
         """ return a list of players sorted by ranking"""
         sorted_players = []
         players_serialized = []
-        id_list = tournament.players_ids
         
-        
-        # # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
-        # for id in id_list:
-        #     player = player_model.player_database.get(doc_id=id) 
-        #     players_serialized.append(player)
-        # players_serialized.sort(key=itemgetter("Classement"), reverse=True)
-
         players_serialized = tournament.list_of_players
-        # print(players_serialized)
-        
+                
         # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
         for player in players_serialized:
             player_1 = self.player.unserialized(player)

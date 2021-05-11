@@ -20,7 +20,6 @@ class Tournament:
                        players_ids=None,
                        list_of_players=None,
                        list_of_tours=None
-                       
                        ):
 
         self.tournament_name = tournament_name
@@ -37,8 +36,8 @@ class Tournament:
         self.home_menu_controller = main_control.HomeMenuController
         self.player_model = player_model.Player()
 
-    def __str__(self):
-        return f"{self.tournament_name} - {self.list_of_tours}"
+    def __repr__(self):
+        return f"{self.tournament_name} - {self.location}\n {self.list_of_tours}"
         
     def serialized(self):
         tournament_infos = {}
@@ -112,6 +111,9 @@ class Tour:
         self.list_of_rounds = []
         self.list_of_finished_rounds = []
         self.view = view_main.TourDisplay()
+    
+    def __repr__(self):
+        return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}.\n{self.list_of_finished_rounds}"
         
     def __call__(self, sorted_players_list):
         
@@ -130,7 +132,7 @@ class Tour:
         self.view.display_tour(self.name, self.list_of_rounds)
 
         for round in self.list_of_rounds:
-            
+
             valid_score_player_1 = False
             while not valid_score_player_1:
                 try:

@@ -22,7 +22,6 @@ class MainDisplay:
               )
     
 
-
 class ClearScreen:
     """Clear the terminal"""
     def __call__(self):
@@ -80,13 +79,13 @@ class TourDisplay:
 
 class EndTournamentDisplay:
     """Display the final score at the end of the tournament"""
-    def __call__(self, tournament_instance, players_instance_list):
+    def __call__(self, tournament_instance):
         print("------------------------------------------------\n"
               "-----------------Fin du tournoi-----------------\n"
               "------------------------------------------------\n"
               "-------------------Résultats--------------------\n"
               "------------------------------------------------\n")
-        for i in tournament_instance.list_of_players:
+        for i in tournament_instance.list_of_tours:
             print(i)
-        print(players_instance_list)
+        # print(players_instance_list)
         print(tournament_instance)
