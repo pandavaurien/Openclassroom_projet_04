@@ -328,6 +328,7 @@ class StartTournament:
 
         return players_sorted_by_score
 
+
     class TournamentReport:
         pass
 

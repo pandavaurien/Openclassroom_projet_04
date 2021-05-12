@@ -1,7 +1,10 @@
+from operator import attrgetter
 import pandas as pd
 
 from controllers import main_control
+import controllers
 from models import player_model
+import models
 from views import view_main
 
 
@@ -117,7 +120,43 @@ class CreatePlayerController:
             else:
                 print("Vous devez entrer 'Y' ou 'N'") 
         return validated_choice 
-   
+
+
+class PlayerReport:
+    """Display the player's report"""
+
+    def __init__(self):
+        self.display_player = view_main.DisplayPlayersReport()
+        self.players_database = models.player_model.player_database
+        self.player = models.player_model.Player()
+        self.home_menu_controller = controllers.main_control.HomeMenuController()
+
+
+    def __call__(self):
+        player_serialized = []
+        # self.players_database = pd.read_json("models/players.json")
+
+        for player in self.players_database:
+            player_serialized.append(self.player.unserialized(player))
+
+        self.display_player()
+        choice = input("--> ")
+        #TODO vérifier les inputs
+        if choice =="1":
+            player_serialized.sort(key=attrgetter("last_name"))
+            self.display_player.display_alphabetical(player_serialized)
+            PlayerReport.__call__(self)
+        if choice =="2":
+            player_serialized.sort(key=attrgetter("ranking"))
+            self.display_player.display_ranking(player_serialized)
+            PlayerReport.__call__(self)
+        if choice == "3":
+            self.home_menu_controller()
+
+
+       
+
+        
 
     
 

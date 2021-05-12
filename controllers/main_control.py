@@ -44,6 +44,7 @@ class PlayerMenuController(HomeMenuController):
     def __init__ (self):
         super().__init__()
         self.create_player = player_controller.CreatePlayerController()
+        self.players_report = player_controller.PlayerReport()
         self.home_menu_controller = HomeMenuController()
         self.player_model = player_model.Player()
     def __call__(self):
@@ -53,7 +54,7 @@ class PlayerMenuController(HomeMenuController):
         if entry == "2":
             self.choosen_controller = self.player_model.update_ranking() 
         if entry == "3":
-            pass
+            self.choosen_controller = self.players_report()
         if entry == "4":
             self.choosen_controller = self.home_menu_controller()
 

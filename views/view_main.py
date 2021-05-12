@@ -1,5 +1,6 @@
 import datetime
 from os import system, name
+from numpy import format_float_positional
 import pandas as pd
 
 from models import tournament_model
@@ -76,7 +77,6 @@ class TourDisplay:
         return begin_time, end_time
 
 
-
 class EndTournamentDisplay:
     """Display the final score at the end of the tournament"""
     def __call__(self, tournament_instance):
@@ -85,7 +85,35 @@ class EndTournamentDisplay:
               "------------------------------------------------\n"
               "-------------------Résultats--------------------\n"
               "------------------------------------------------\n")
-        for i in tournament_instance.list_of_tours:
-            print(i)
+        # for i in tournament_instance.list_of_tours:
+        #     print(i)
         # print(players_instance_list)
         print(tournament_instance)
+
+
+class DisplayPlayersReport:
+
+    def __call__(self):
+        print("------------------------------------------------\n"
+              "-------------Affichages des joueurs-------------\n"
+              "------------------------------------------------\n"
+              " Afficher les rapports :\n"
+              "1 - Par ordre alphabétique\n"
+              "2 - Par ordre de classement\n"
+              "3 - Pour revenir au menu principal\n"
+              )
+        
+
+    def display_alphabetical(self, players_list):
+        for player in players_list:
+            print(f"{player.last_name} {player.first_name} - {player.birthdate} - {player.gender} - Classement : {player.ranking}")
+        print("Appuyer sur une touche pour revenir au menu rapport")
+        input()
+
+
+    def display_ranking(self, players_list):
+        for player in players_list:
+            # player.ranking = int(player.ranking)
+            print(f"Classement :{player.ranking} - {player.last_name} {player.first_name} - {player.birthdate} - {player.gender}")
+        print("Appuyer sur une touche pour revenir au menu rapport")
+        input()

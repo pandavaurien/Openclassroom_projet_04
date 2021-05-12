@@ -37,7 +37,7 @@ class Tournament:
         self.player_model = player_model.Player()
 
     def __repr__(self):
-        return f"{self.tournament_name} - {self.location}\n {self.list_of_tours}"
+        return f"{self.tournament_name} - {self.location}\n {self.list_of_tours}\n"
         
     def serialized(self):
         tournament_infos = {}
@@ -102,18 +102,18 @@ class Tour:
     TOUR_NUMBER = 1
     
 
-    def __init__(self, name=None, begin_time=None, end_time=None, list_of_finished_rounds=None):
+    def __init__(self, name=None, begin_time=None, end_time=None, list_of_finished_rounds=[]):
         self.name = name
         self.begin_time = begin_time
         self.end_time = end_time
         self.player = player_model.Player()
         self.round = Round()
         self.list_of_rounds = []
-        self.list_of_finished_rounds = []
+        self.list_of_finished_rounds = list_of_finished_rounds
         self.view = view_main.TourDisplay()
     
     def __repr__(self):
-        return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}.\n{self.list_of_finished_rounds}"
+        return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}.\n{self.list_of_finished_rounds}\n"
         
     def __call__(self, sorted_players_list):
         
