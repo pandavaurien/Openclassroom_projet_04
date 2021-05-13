@@ -57,9 +57,10 @@ class TourDisplay:
         """Display the tour at the beginning of it"""
         
         print(f"--------------------------{tour_name}-------------------------\n")
-        for round in list_of_rounds:
-            print(round.__str__())
         print()
+        for round in list_of_rounds:
+            print(round)
+            print()
 
     def display_tournament_time(self):
 
@@ -85,10 +86,14 @@ class EndTournamentDisplay:
               "------------------------------------------------\n"
               "-------------------Résultats--------------------\n"
               "------------------------------------------------\n")
-        # for i in tournament_instance.list_of_tours:
-        #     print(i)
-        # print(players_instance_list)
+       
         print(tournament_instance)
+
+        # for tour in tournament_instance.list_of_tours:
+        #     print(f"{tournament_instance.list_of_tours.begin_time} {tournament_instance.list_of_tours.end_time}")
+        # for rnds in tournament_instance.tour.list_of_finished_rounds:
+        #         print(rnds)
+                # print(f"{tour.list_of_finished_rounds[0][0]} ---CONTRE--- {tour.list_of_finished_rounds[0][1]}")
 
 
 class DisplayPlayersReport:

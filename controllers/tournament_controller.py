@@ -3,12 +3,13 @@ from operator import itemgetter
 from operator import attrgetter
 
 import pandas as pd
-from tinydb import Query
+from tinydb import TinyDB, Query
 
 from controllers import main_control
 from controllers import create_menus
 from models import tournament_model
 from models import player_model
+import models
 from views import view_main
 
 
@@ -35,7 +36,6 @@ class CreateTournamentController:
         self.add_players_to_tournament()
         self.tournament_values.append(self.players_in_tournament)
         self.tournament.add_to_database(self.tournament_values)
-        # self.tournament.add_players_of_tournament_in_database(self.players_in_tournament)
         self.home_menu_controller()
        
     def add_tournament_name(self):
@@ -226,6 +226,19 @@ class StartTournament:
             self.sorted_players = self.sort_players_by_score()
             self.tournament_object.list_of_tours.append(self.tour(self.sorted_players))
 
+        # Add the tournament infos from the object to the database
+
+        # Name = Query()
+        # db = tournament_model.tournament_database
+        # tournament_table = db.search(Name["Nom du tournoi"] == self.tournament_object.tournament_name)
+        # tournament_table = tournament_table[0]
+        # print(tournament_table)
+        # print()
+        # tournament_serialized = self.tournament_object.serialized()
+        # print(tournament_serialized)
+        # input()
+        # db.update({"Tours" : tournament_serialized["Tours"]}, Name["Nom du tournoi"] == self.tournament_object.tournament_name)
+                
         self.view_final_scores(self.tournament_object)
                
     def select_a_tournament(self):
@@ -257,7 +270,6 @@ class StartTournament:
         # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
         for player in players_serialized:
             player_1 = self.player.unserialized(player)
-            # self.tournament.unserialized(tournament)
             index_player_1 = players_serialized.index(player)
 
             """ I divide the number of players by 2, and I add the result to the index
@@ -283,7 +295,6 @@ class StartTournament:
         for round in self.tour.list_of_finished_rounds:
             for player in round:
                 players_sorted_by_score.append(player)
-        # print(players_sorted_by_score)
 
         for player in players_sorted_by_score:
             player.pop()

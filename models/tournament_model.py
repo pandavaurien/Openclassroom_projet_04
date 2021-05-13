@@ -19,7 +19,7 @@ class Tournament:
                        description=None,
                        players_ids=None,
                        list_of_players=None,
-                       list_of_tours=None
+                       list_of_tours=[]
                        ):
 
         self.tournament_name = tournament_name
@@ -30,14 +30,14 @@ class Tournament:
         self.description = description
         self.players_ids = players_ids
         self.list_of_players = list_of_players
-        self.list_of_tours = []
+        self.list_of_tours = list_of_tours
         
         self.player_database = player_model.player_database
         self.home_menu_controller = main_control.HomeMenuController
         self.player_model = player_model.Player()
 
     def __repr__(self):
-        return f"{self.tournament_name} - {self.location}\n {self.list_of_tours}\n"
+        return f"{self.tournament_name} - {self.location}\n\n {self.list_of_tours}\n"
         
     def serialized(self):
         tournament_infos = {}
@@ -99,10 +99,10 @@ class Tour:
     ---
     Renvoi l'instance de tour
     """
+    
     TOUR_NUMBER = 1
     
-
-    def __init__(self, name=None, begin_time=None, end_time=None, list_of_finished_rounds=[]):
+    def __init__(self, name=None, begin_time=None, end_time=None, list_of_finished_rounds=None):
         self.name = name
         self.begin_time = begin_time
         self.end_time = end_time
@@ -113,11 +113,11 @@ class Tour:
         self.view = view_main.TourDisplay()
     
     def __repr__(self):
-        return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}.\n{self.list_of_finished_rounds}\n"
+        return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}.\n\n{self.list_of_finished_rounds}\n\n"
         
     def __call__(self, sorted_players_list):
-        
-        self.list_of_finished_rounds.clear()
+        self.list_of_rounds = []
+        self.list_of_finished_rounds = []
         self.name = "Tour n°" + str(Tour.TOUR_NUMBER)
         Tour.TOUR_NUMBER += 1
         
@@ -138,11 +138,10 @@ class Tour:
                 try:
                     score_player_1 = input(f"Entrez le score de {round.player_1} :")  
                     float(score_player_1)
-                    0 <float(score_player_1) <= 1
                 except Exception:
                     print("Vous devez entrer 0, 0.5, ou 1")
                 else:
-                    round.player_1.tournament_score += float(score_player_1)
+                    round.player_1.score_player_1 = float(score_player_1)
                     valid_score_player_1 = True
 
             valid_score_player_2 = False
@@ -150,16 +149,14 @@ class Tour:
                 try:
                     score_player_2 = input(f"Entrez le score de {round.player_2} :")  
                     float(score_player_2)
-                    0 <float(score_player_2) <= 1
                 except Exception:
                     print("Vous devez entrer 0, 0.5, ou 1")
                 else:
-                    round.player_2.tournament_score += float(score_player_2)
+                    round.player_2.score_player_2 = float(score_player_2)
                     valid_score_player_2 = True
 
-            self.list_of_finished_rounds.append(([round.player_1, round.player_1.tournament_score], [round.player_2, round.player_2.tournament_score]))
+            self.list_of_finished_rounds.append(([round.player_1, round.player_1.score_player_1], [round.player_2, round.player_2.score_player_2]))
         print()
-        self.list_of_rounds.clear()
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_rounds)
           
     
@@ -172,17 +169,21 @@ class Round:
 
     ROUND_NUMBER = 1
 
-    def __init__(self, name=None, player_1=None, player_2=None):
+    def __init__(self, name=None, player_1=None, player_2=None, score_player_1=None, score_player_2=None):
         self.name = name
         self.player_1 = player_1
         self.player_2 = player_2
+        self.score_player_1 = score_player_1
+        self.score_player_2 = score_player_2
         
     def create_instance(self, list_of_player):
         player_1 = list_of_player[0]
-        player_2 = list_of_player[1]    
+        player_2 = list_of_player[1]
+        score_player_1 = 0
+        score_player_2 = 0  
         name = "Round" + str(Round.ROUND_NUMBER)
         Round.ROUND_NUMBER += 1
-        return Round(name, player_1, player_2)
+        return Round(name, player_1, player_2, score_player_1, score_player_2)
     
     def __str__(self):
         return f"{self.name} : {self.player_1} --CONTRE-- {self.player_2}."
