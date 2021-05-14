@@ -1,10 +1,10 @@
 import time
 
-from tinydb import TinyDB, Query
+from tinydb import TinyDB
 import pandas as pd
 
 from controllers import main_control
-from controllers import player_controller
+# from controllers import player_controller
 
 player_database = TinyDB('models/players.json')
 
@@ -17,7 +17,6 @@ class Player:
         self.birthdate = birthdate
         self.gender = gender
         self.ranking = ranking
-        self.home_menu_controller = main_control.HomeMenuController()
         self.tournament_score = tournament_score
 
     def serialized(self):
@@ -46,6 +45,7 @@ class Player:
         return f"{self.last_name} {self.first_name}, classement : {self.ranking}"
         
     def update_ranking(self):
+        self.home_menu_controller = main_control.HomeMenuController()
         self.players_database = pd.read_json("models/players.json")
         print(self.players_database)
         print()

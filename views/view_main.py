@@ -6,7 +6,6 @@ import pandas as pd
 from models import tournament_model
 
 
-
 class MainDisplay:
     """Docstring"""
    
@@ -51,15 +50,15 @@ class FrameDisplay:
 class TourDisplay:
     """Docstring"""
     def __init__(self):
-        self.round = tournament_model.Round() 
+        self.match = tournament_model.Match() 
     
-    def display_tour(self, tour_name, list_of_rounds):
+    def display_tour(self, tour_name, list_of_matchs):
         """Display the tour at the beginning of it"""
         
         print(f"--------------------------{tour_name}-------------------------\n")
         print()
-        for round in list_of_rounds:
-            print(round)
+        for match in list_of_matchs:
+            print(match)
             print()
 
     def display_tournament_time(self):
@@ -91,9 +90,9 @@ class EndTournamentDisplay:
 
         # for tour in tournament_instance.list_of_tours:
         #     print(f"{tournament_instance.list_of_tours.begin_time} {tournament_instance.list_of_tours.end_time}")
-        # for rnds in tournament_instance.tour.list_of_finished_rounds:
+        # for rnds in tournament_instance.tour.list_of_finished_matchs:
         #         print(rnds)
-                # print(f"{tour.list_of_finished_rounds[0][0]} ---CONTRE--- {tour.list_of_finished_rounds[0][1]}")
+                # print(f"{tour.list_of_finished_matchs[0][0]} ---CONTRE--- {tour.list_of_finished_matchs[0][1]}")
 
 
 class DisplayPlayersReport:

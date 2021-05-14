@@ -54,7 +54,7 @@ class PlayerMenuController(HomeMenuController):
         if entry == "2":
             self.choosen_controller = self.player_model.update_ranking() 
         if entry == "3":
-            self.choosen_controller = self.players_report()
+            self.choosen_controller = self.players_report
         if entry == "4":
             self.choosen_controller = self.home_menu_controller()
 

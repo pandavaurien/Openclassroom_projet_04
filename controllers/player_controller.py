@@ -13,10 +13,11 @@ class CreatePlayerController:
     def __init__(self):
         self.player_values = []
         self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Classement"]
-        self.home_menu_controller = main_control.HomeMenuController()
-        self.player_model = player_model.Player()
+        # self.home_menu_controller = main_control.HomeMenuController()
+        
 
     def __call__(self): 
+        self.player_model = player_model.Player()
         self.player_values.append(self.add_last_name())
         self.player_values.append(self.add_first_name())
         self.player_values.append(self.add_birth_details())
@@ -25,7 +26,8 @@ class CreatePlayerController:
         if self.validate_player():
             self.player_model.add_to_database(self.player_values)
         self.player_values.clear()
-        self.home_menu_controller()
+        main_control.HomeMenuController()
+        
     
     def add_last_name(self):
         valid_last_name = False
@@ -126,16 +128,15 @@ class PlayerReport:
     """Display the player's report"""
 
     def __init__(self):
+        pass    
+        # self.home_menu_controller = controllers.main_control.HomeMenuController()
+
+    def __call__(self):
         self.display_player = view_main.DisplayPlayersReport()
         self.players_database = models.player_model.player_database
         self.player = models.player_model.Player()
-        self.home_menu_controller = controllers.main_control.HomeMenuController()
-
-
-    def __call__(self):
         player_serialized = []
-        # self.players_database = pd.read_json("models/players.json")
-
+        
         for player in self.players_database:
             player_serialized.append(self.player.unserialized(player))
 
@@ -151,7 +152,7 @@ class PlayerReport:
             self.display_player.display_ranking(player_serialized)
             PlayerReport.__call__(self)
         if choice == "3":
-            self.home_menu_controller()
+            main_control.HomeMenuController()
 
 
        

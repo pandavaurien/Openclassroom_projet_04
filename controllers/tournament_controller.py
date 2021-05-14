@@ -9,7 +9,6 @@ from controllers import main_control
 from controllers import create_menus
 from models import tournament_model
 from models import player_model
-import models
 from views import view_main
 
 
@@ -129,6 +128,7 @@ class CreateTournamentController:
     def add_players_to_tournament(self):
         """Add the ids of the selected players in a list, en return the list"""
         view_main.ClearScreen()
+        # Name = Query()
         id_choice = None
         
         valid_add_player_choice = False
@@ -192,14 +192,23 @@ class CreateTournamentController:
         print("Joueurs dans le tournoi : " + str(self.players_ids))
         self.add_players_to_tournament()
         
-        # itère dans les ids de joueurs, puis classe les joueurs par ordre de classement
-        # et copie les joueurs sérialisés dans la base de données du tournoi.
+        # itère dans les ids de joueurs, puis classe les ids des joueurs par ordre de classement
         for id in self.players_ids:
             player = player_model.player_database.get(doc_id=id) 
             self.players_serialized.append(player)
         self.players_serialized.sort(key=itemgetter("Classement"), reverse=True)
+        self.players_ids.clear()
+
+        for player in self.players_serialized:
+            self.players_ids.append(player.doc_id)
+            # ply = player_model.player_database.search(Query()["Nom"] == player["Nom"])
+            # print(ply)
+            # self.players_ids.append(ply.doc_id)
+        print(self.players_ids)
+        input()
+
         self.tournament_values.append(self.players_ids.copy())
-        self.tournament_values.append(self.players_serialized.copy())
+        # self.tournament_values.append(self.players_serialized.copy())
         
         
 class StartTournament:
@@ -208,23 +217,25 @@ class StartTournament:
     MATCHS_PLAYED = []
 
     def __init__(self):
+        pass
+        # self.tournament_object = None
+        # self.view_tour = view_main.TourDisplay()
+                            
+    def __call__(self):
         self.tour = tournament_model.Tour()
-        self.tournament = tournament_model.Tournament()
-        self.player = player_model.Player()
-        self.tournament_object = None
-        self.view_tour = view_main.TourDisplay()
         self.view_final_scores = view_main.EndTournamentDisplay()
         self.sorted_players = []
-            
-    def __call__(self):
+
         self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
         self.sorted_players = self.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
         self.tournament_object.list_of_tours.append(self.tour(self.sorted_players)) # 1er tour, joueurs triés par classement, copie l'instance de tour dans tournament
-        
-        for tour in range(int(self.tournament_object.number_of_rounds) -1):
+        # self.view_final_scores(self.tournament_object)
+
+        for tour in range(int(self.tournament_object.number_of_matchs) -1):
             self.sorted_players.clear()
             self.sorted_players = self.sort_players_by_score()
             self.tournament_object.list_of_tours.append(self.tour(self.sorted_players))
+            # self.view_final_scores(self.tournament_object)
 
         # Add the tournament infos from the object to the database
 
@@ -242,6 +253,8 @@ class StartTournament:
         self.view_final_scores(self.tournament_object)
                
     def select_a_tournament(self):
+        self.tournament = tournament_model.Tournament()
+
         display_tournament = pd.read_json("models/tournament.json")
         print(display_tournament)
 
@@ -262,9 +275,8 @@ class StartTournament:
 
     def sort_player_first_tour(self, tournament):
         """ return a list of players sorted by ranking"""
+        self.player = player_model.Player()
         sorted_players = []
-        players_serialized = []
-        
         players_serialized = tournament.list_of_players
                 
         # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
@@ -283,17 +295,17 @@ class StartTournament:
                 self.MATCHS_PLAYED.append({player_1, player_2})
             else:
                 pass
-            
+
         return sorted_players
 
     def sort_players_by_score(self):
         """ return a list of players sorted by score"""
         players_sorted_by_score = []
         players_sorted_flat = []
-        round_to_try = set()
+        match_to_try = set()
     
-        for round in self.tour.list_of_finished_rounds:
-            for player in round:
+        for match in self.tour.list_of_finished_matchs:
+            for player in match:
                 players_sorted_by_score.append(player)
 
         for player in players_sorted_by_score:
@@ -314,27 +326,27 @@ class StartTournament:
                 except:
                     break
                             
-            round_to_try.add(player_1) 
-            round_to_try.add(player_2) 
+            match_to_try.add(player_1) 
+            match_to_try.add(player_2) 
 
-            while round_to_try in self.MATCHS_PLAYED: # compare round_to_try avec les match déjà joués    
-                print(f"Le match {round_to_try} a déjà eu lieu")
+            while match_to_try in self.MATCHS_PLAYED: # compare match_to_try avec les match déjà joués    
+                print(f"Le match {match_to_try} a déjà eu lieu")
                 time.sleep(1)
-                round_to_try.remove(player_2)                
+                match_to_try.remove(player_2)                
                 try:
                     player_2 = players_sorted_flat[players_sorted_flat.index(player_2) + 1]
                 except:
                     break
-                round_to_try.add(player_2)
+                match_to_try.add(player_2)
                 continue
                     
             else:
-                print(f"Ajout du match {round_to_try}")
+                print(f"Ajout du match {match_to_try}")
                 players_sorted_by_score.append(player_1)
                 players_sorted_by_score.append(player_2)
                 players_sorted_flat.pop(players_sorted_flat.index(player_2))
                 self.MATCHS_PLAYED.append({player_1, player_2})
-                round_to_try.clear()              
+                match_to_try.clear()              
                 time.sleep(1)
 
         return players_sorted_by_score
