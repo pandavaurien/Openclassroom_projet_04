@@ -4,7 +4,7 @@
             "Nom du tournoi": "test",
             "Lieu": "test",
             "Date": "12/12/1212",
-            "Nombre de match": 4,
+            "Nombre de tours": 4,
             "Controle du temps": "Bullet",
             "Description": "description",
             "Joueurs_id": [
@@ -15,7 +15,7 @@
                 1,
                 4
             ],
-            "Matchs": []
+            "Tours": []
         }
     }
 }
