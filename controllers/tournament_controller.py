@@ -9,6 +9,7 @@ from controllers import main_control
 from controllers import create_menus
 from models import tournament_model
 from models import player_model
+import models
 from views import view_main
 
 
@@ -128,7 +129,6 @@ class CreateTournamentController:
     def add_players_to_tournament(self):
         """Add the ids of the selected players in a list, en return the list"""
         view_main.ClearScreen()
-        # Name = Query()
         id_choice = None
         
         valid_add_player_choice = False
@@ -204,9 +204,6 @@ class CreateTournamentController:
             # ply = player_model.player_database.search(Query()["Nom"] == player["Nom"])
             # print(ply)
             # self.players_ids.append(ply.doc_id)
-        print(self.players_ids)
-        input()
-
         self.tournament_values.append(self.players_ids.copy())
         # self.tournament_values.append(self.players_serialized.copy())
         
@@ -256,7 +253,7 @@ class StartTournament:
         self.tournament = tournament_model.Tournament()
 
         display_tournament = pd.read_json("models/tournament.json")
-        print(display_tournament)
+        print(display_tournament) #TODO Afficher dans le view
 
         valid_entry = False
         while not valid_entry:
@@ -277,24 +274,43 @@ class StartTournament:
         """ return a list of players sorted by ranking"""
         self.player = player_model.Player()
         sorted_players = []
-        players_serialized = tournament.list_of_players
-                
-        # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
-        for player in players_serialized:
-            player_1 = self.player.unserialized(player)
-            index_player_1 = players_serialized.index(player)
+        players_instances = []
 
+        # # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
+        # for player in players_serialized:
+        #     player_1 = self.player.unserialized(player)
+        #     index_player_1 = players_serialized.index(player)
+
+        # Iterate in id's list, then create a player instance for each ids
+        print(tournament.players_ids)
+        input()
+
+        for id in tournament.players_ids:
+            player =  player_model.player_database.get(doc_id=id)
+            player = self.player.unserialized(player)
+            players_instances.append(player)
+
+        print(players_instances)
+        input()
+        
+        for player in players_instances:
+            player_1 = player
+            index_player_1 = players_instances.index(player)
+            
             """ I divide the number of players by 2, and I add the result to the index
             example : For 8 players, I add 4 to the first index,
             player[0] against player [4],
             player[1] against player [5] etc..."""
-            if index_player_1 + len(players_serialized) / 2 < len(players_serialized):
-                player_2 = self.player.unserialized(players_serialized[index_player_1 + int(len(players_serialized) / 2)])
+            if index_player_1 + len(tournament.players_ids) / 2 < len(tournament.players_ids):
+                index_player_2 = index_player_1 + int(len(tournament.players_ids) / 2)
+                player_2 = players_instances[index_player_2]
                 sorted_players.append(player_1)
                 sorted_players.append(player_2)
+                input()
                 self.MATCHS_PLAYED.append({player_1, player_2})
             else:
                 pass
+        print(sorted_players)
 
         return sorted_players
 

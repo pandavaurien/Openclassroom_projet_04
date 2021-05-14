@@ -45,7 +45,7 @@ class Tournament:
         tournament_infos['Lieu'] = self.location
         tournament_infos['Date'] = self.tournament_date
         tournament_infos['Nombre de match'] = self.number_of_matchs
-        tournament_infos['Contrôle du temps'] = self.time_control
+        tournament_infos['Controle du temps'] = self.time_control
         tournament_infos['Description'] = self.description
         tournament_infos["Joueurs_id"] = self.players_ids
         # tournament_infos["Liste de joueurs"] = self.list_of_players
@@ -58,7 +58,7 @@ class Tournament:
         location = serialized_tournament['Lieu']
         tournament_date = serialized_tournament['Date']
         number_of_matchs = serialized_tournament['Nombre de match']
-        time_control = serialized_tournament['Contrôle du temps']
+        time_control = serialized_tournament['Controle du temps']
         description = serialized_tournament['Description']
         players_ids = serialized_tournament["Joueurs_id"]
         # list_of_players = serialized_tournament["Liste de joueurs"]

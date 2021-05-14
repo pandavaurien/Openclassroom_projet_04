@@ -22,7 +22,7 @@ class Player:
     def serialized(self):
         player_infos = {}
         player_infos['Nom'] = self.last_name
-        player_infos['Prénom'] = self.first_name
+        player_infos['Prenom'] = self.first_name
         player_infos['Date de naissance'] = self.birthdate
         player_infos['Sexe'] = self.gender
         player_infos['Classement'] = self.ranking
@@ -31,7 +31,7 @@ class Player:
 
     def unserialized(self, serialized_player):
         last_name = serialized_player["Nom"]
-        first_name = serialized_player["Prénom"]
+        first_name = serialized_player["Prenom"]
         birthdate = serialized_player["Date de naissance"]
         gender = serialized_player["Sexe"]
         ranking = serialized_player["Classement"]
