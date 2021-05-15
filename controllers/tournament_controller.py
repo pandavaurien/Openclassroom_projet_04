@@ -217,14 +217,21 @@ class StartTournament:
         pass
                                     
     def __call__(self):
+        self.sorted_players = []
+        tour_to_db = []
+        self.tournament_menu_controller = main_control.TournamentMenuController()
         self.tour = tournament_model.Tour()
         self.view_final_scores = view_main.EndTournamentDisplay()
-        self.sorted_players = []
-
-        self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
-        self.sorted_players = self.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
-        self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players)) # 1er tour, joueurs triés par classement, copie l'instance de tour dans tournament
         
+        self.tournament_object = self.select_a_tournament() # Ask to choose a tournament and return an instance of tournament
+        if self.tournament_object.list_of_tours != []:
+            print("\nLe tournoi a déja eu lieu, veuillez en choisir un autre\n")
+            time.sleep(1)
+            self.tournament_menu_controller()
+        self.sorted_players = self.sort_player_first_tour(self.tournament_object) # copy in the list "sorted_players" the players by ranking
+        self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players)) # 1st tour, copy the instance in tournament
+        
+        # all the others tours
         for tour in range(int(self.tournament_object.number_of_tours) - 1):
             self.sorted_players.clear()
             self.sorted_players = self.sort_players_by_score(self.tournament_object.list_of_tours[tour])
@@ -232,27 +239,32 @@ class StartTournament:
             
         # Add the tournament infos from the object to the database
         Name = Query()
-        db = tournament_model.tournament_database
-        tournament_table = db.search(Name["Nom du tournoi"] == self.tournament_object.tournament_name)
-        tournament_table = tournament_table[0]
-        # print(tournament_table)
-        # print()
+        db_tournament = tournament_model.tournament_database
+        db_players = player_model.player_database
+        tournament_table = db_tournament.get(Name["Nom du tournoi"] == self.tournament_object.tournament_name)
         tournament_serialized = self.tournament_object.serialized()
-        print(tournament_serialized)
-        input()
+        
         for tour in tournament_serialized['Tours']:
             tour_serialized = tour.serialized()
-            # print(tour_serialized['Matchs'][0][0]) # [instance joueuer, score]
             for match in tour_serialized['Matchs']:
-                for  in match:
-
                 
-                print(match)
-                print()
-                input()
-            
-                 
-            # db.upsert({"Tours" : tournament_serialized["Tours"]}, Name["Nom du tournoi"] == self.tournament_object.tournament_name)
+                player_1_and_result = []
+                player_2_and_result = []
+                player_1_id = db_players.get(Name["Nom"] == match[0][0].last_name).doc_id
+                player_1_and_result = [player_1_id, match[0][1]]
+                print(player_1_and_result)
+                player_2_id = db_players.get(Name["Nom"] == match[1][0].last_name).doc_id
+                player_2_and_result = [player_2_id, match[1][1]]
+                print(player_2_and_result)               
+                match_to_db = (player_1_and_result, player_2_and_result)
+                tour_to_db.append(match_to_db)
+        print(tour_to_db)
+        input()   
+        print(tournament_table)
+        input()
+        print(tournament_table.doc_id)
+        input()           
+        db_tournament.update({"Tours" : tour_to_db}, doc_ids=[tournament_table.doc_id])
                 
         self.view_final_scores(self.tournament_object)
                

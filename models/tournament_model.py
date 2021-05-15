@@ -164,7 +164,7 @@ class Tour:
                     match.score_player_2 = float(score_player_2)
                     match.player_2.tournament_score += float(score_player_2)
                     valid_score_player_2 = True
-            # self.list_of_finished_matchs.append()
+            
             self.list_of_finished_matchs.append(([match.player_1, match.score_player_1], [match.player_2, match.score_player_2]))
 
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_matchs)
@@ -188,6 +188,3 @@ class Match:
            
     def __str__(self):
         return f"{self.name} : {self.player_1} --CONTRE-- {self.player_2}."
-
-
-
