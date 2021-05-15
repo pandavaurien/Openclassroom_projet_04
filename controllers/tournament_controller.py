@@ -1,4 +1,5 @@
 import time
+import copy
 from operator import itemgetter
 from operator import attrgetter
 
@@ -205,8 +206,7 @@ class CreateTournamentController:
             # print(ply)
             # self.players_ids.append(ply.doc_id)
         self.tournament_values.append(self.players_ids.copy())
-        # self.tournament_values.append(self.players_serialized.copy())
-        
+
         
 class StartTournament:
     """Docstring"""
@@ -215,9 +215,7 @@ class StartTournament:
 
     def __init__(self):
         pass
-        # self.tournament_object = None
-        # self.view_tour = view_main.TourDisplay()
-                            
+                                    
     def __call__(self):
         self.tour = tournament_model.Tour()
         self.view_final_scores = view_main.EndTournamentDisplay()
@@ -225,27 +223,36 @@ class StartTournament:
 
         self.tournament_object = self.select_a_tournament() # demande de choisir un tournoi et renvoi une instance de Tournament
         self.sorted_players = self.sort_player_first_tour(self.tournament_object) # copie dans la liste "sorted_players" les joueurs triés par classement
-        self.tournament_object.list_of_tours.append(self.tour(self.sorted_players)) # 1er tour, joueurs triés par classement, copie l'instance de tour dans tournament
-        # self.view_final_scores(self.tournament_object)
-
-        for tour in range(int(self.tournament_object.number_of_tours) -1):
+        self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players)) # 1er tour, joueurs triés par classement, copie l'instance de tour dans tournament
+        
+        for tour in range(int(self.tournament_object.number_of_tours) - 1):
             self.sorted_players.clear()
-            self.sorted_players = self.sort_players_by_score()
-            self.tournament_object.list_of_tours.append(self.tour(self.sorted_players))
-            # self.view_final_scores(self.tournament_object)
-
+            self.sorted_players = self.sort_players_by_score(self.tournament_object.list_of_tours[tour])
+            self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players))
+            
         # Add the tournament infos from the object to the database
-
-        # Name = Query()
-        # db = tournament_model.tournament_database
-        # tournament_table = db.search(Name["Nom du tournoi"] == self.tournament_object.tournament_name)
-        # tournament_table = tournament_table[0]
+        Name = Query()
+        db = tournament_model.tournament_database
+        tournament_table = db.search(Name["Nom du tournoi"] == self.tournament_object.tournament_name)
+        tournament_table = tournament_table[0]
         # print(tournament_table)
         # print()
-        # tournament_serialized = self.tournament_object.serialized()
-        # print(tournament_serialized)
-        # input()
-        # db.update({"Tours" : tournament_serialized["Tours"]}, Name["Nom du tournoi"] == self.tournament_object.tournament_name)
+        tournament_serialized = self.tournament_object.serialized()
+        print(tournament_serialized)
+        input()
+        for tour in tournament_serialized['Tours']:
+            tour_serialized = tour.serialized()
+            # print(tour_serialized['Matchs'][0][0]) # [instance joueuer, score]
+            for match in tour_serialized['Matchs']:
+                for  in match:
+
+                
+                print(match)
+                print()
+                input()
+            
+                 
+            # db.upsert({"Tours" : tournament_serialized["Tours"]}, Name["Nom du tournoi"] == self.tournament_object.tournament_name)
                 
         self.view_final_scores(self.tournament_object)
                
@@ -275,13 +282,6 @@ class StartTournament:
         self.player = player_model.Player()
         sorted_players = []
         players_instances = []
-
-        # # itère dans la liste de joueurs, créé une instance de joueur à chaque itération
-        # for player in players_serialized:
-        #     player_1 = self.player.unserialized(player)
-        #     index_player_1 = players_serialized.index(player)
-
-        # Iterate in id's list, then create a player instance for each ids
       
         for id in tournament.players_ids:
             player =  player_model.player_database.get(doc_id=id)
@@ -307,23 +307,26 @@ class StartTournament:
         
         return sorted_players
 
-    def sort_players_by_score(self):
+    def sort_players_by_score(self, tour_instance):
         """ return a list of players sorted by score"""
+        players = []
         players_sorted_by_score = []
         players_sorted_flat = []
         match_to_try = set()
     
-        for match in self.tour.list_of_finished_matchs:
+        for match in tour_instance.list_of_finished_matchs:
             for player in match:
-                players_sorted_by_score.append(player)
-
+                players.append(player)
+        
+        players_sorted_by_score = copy.copy(players)
+        
         for player in players_sorted_by_score:
-            player.pop()
             players_sorted_flat.append(player[0])
 
+        players_sorted_by_score.clear()
+     
         #Sort players by score, if score are equals, sort by rank.
         players_sorted_flat.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
-        players_sorted_by_score.clear()
 
         for player_1 in players_sorted_flat:
 

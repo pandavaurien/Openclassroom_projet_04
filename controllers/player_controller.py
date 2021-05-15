@@ -13,7 +13,7 @@ class CreatePlayerController:
     def __init__(self):
         self.player_values = []
         self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Classement"]
-        # self.home_menu_controller = main_control.HomeMenuController()
+        
         
 
     def __call__(self): 
@@ -128,8 +128,7 @@ class PlayerReport:
     """Display the player's report"""
 
     def __init__(self):
-        pass    
-        # self.home_menu_controller = controllers.main_control.HomeMenuController()
+        pass
 
     def __call__(self):
         self.display_player = view_main.DisplayPlayersReport()

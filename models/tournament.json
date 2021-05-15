@@ -11,6 +11,23 @@
                 3,
                 6,
                 2,
+                5
+            ],
+            "Tours": []
+        },
+        "2": {
+            "Nom du tournoi": "Tournoi des As",
+            "Lieu": "Paris",
+            "Date": "21/09/2021",
+            "Nombre de tours": 4,
+            "Controle du temps": "Coup rapide",
+            "Description": "Pas de description",
+            "Joueurs_id": [
+                10,
+                9,
+                7,
+                3,
+                8,
                 5,
                 1,
                 4

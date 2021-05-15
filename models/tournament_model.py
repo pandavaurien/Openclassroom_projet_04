@@ -18,7 +18,6 @@ class Tournament:
                        time_control=None, 
                        description=None,
                        players_ids=None,
-                    #    list_of_players=None,
                        list_of_tours=[]
                        ):
 
@@ -29,12 +28,7 @@ class Tournament:
         self.time_control = time_control
         self.description = description
         self.players_ids = players_ids
-        # self.list_of_players = list_of_players
         self.list_of_tours = list_of_tours
-        
-        # self.player_database = player_model.player_database
-        # self.home_menu_controller = main_control.HomeMenuController
-        # self.player_model = player_model.Player()
 
     def __repr__(self):
         return f"{self.tournament_name} - {self.location}\n\n {self.list_of_tours}\n"
@@ -48,7 +42,6 @@ class Tournament:
         tournament_infos['Controle du temps'] = self.time_control
         tournament_infos['Description'] = self.description
         tournament_infos["Joueurs_id"] = self.players_ids
-        # tournament_infos["Liste de joueurs"] = self.list_of_players
         tournament_infos["Tours"] = self.list_of_tours
         
         return tournament_infos
@@ -61,7 +54,6 @@ class Tournament:
         time_control = serialized_tournament['Controle du temps']
         description = serialized_tournament['Description']
         players_ids = serialized_tournament["Joueurs_id"]
-        # list_of_players = serialized_tournament["Liste de joueurs"]
         list_of_tours =serialized_tournament["Tours"]
         
         return Tournament(tournament_name, 
@@ -71,7 +63,6 @@ class Tournament:
                           time_control,
                           description,
                           players_ids,
-                        #   list_of_players,
                           list_of_tours                          
                           )
 
@@ -83,7 +74,6 @@ class Tournament:
                                 tournament_values[4],
                                 tournament_values[5],
                                 tournament_values[6],
-                                # tournament_values[7]
                                 )
         tournament_database.insert(tournament.serialized())        
 
@@ -108,14 +98,31 @@ class Tour:
         self.end_time = end_time
         self.list_of_finished_matchs = list_of_finished_matchs
         self.list_of_tours = []
-                    
+
+    def serialized(self):
+        tour_infos = {}
+        tour_infos['Nom'] = self.name
+        tour_infos['Debut'] = self.begin_time
+        tour_infos['Fin'] = self.end_time
+        tour_infos['Matchs'] = self.list_of_finished_matchs
+        return tour_infos
+
+    def unserialized(self, serialized_tour):
+        name = serialized_tour['Nom']
+        begin_time = serialized_tour['Debut']
+        end_time = serialized_tour['Fin']
+        list_of_finished_matchs = serialized_tour['Matchs']
+        return Tour(name,
+                    begin_time,
+                    end_time,
+                    list_of_finished_matchs
+                    )
+
     def __repr__(self):
         return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}.\n\n{self.list_of_finished_matchs}\n\n"
         
-    def __call__(self, sorted_players_list):
-        # self.player = player_model.Player()
+    def run(self, sorted_players_list):
         self.view = view_main.TourDisplay()
-        # self.match = match()
         self.list_of_tours = []
         self.list_of_finished_matchs = []
         self.name = "Tour n°" + str(Tour.TOUR_NUMBER)
@@ -143,6 +150,7 @@ class Tour:
                     print("Vous devez entrer 0, 0.5, ou 1")
                 else:
                     match.score_player_1 = float(score_player_1)
+                    match.player_1.tournament_score += float(score_player_1)
                     valid_score_player_1 = True
 
             valid_score_player_2 = False
@@ -154,10 +162,11 @@ class Tour:
                     print("Vous devez entrer 0, 0.5, ou 1")
                 else:
                     match.score_player_2 = float(score_player_2)
+                    match.player_2.tournament_score += float(score_player_2)
                     valid_score_player_2 = True
-
+            # self.list_of_finished_matchs.append()
             self.list_of_finished_matchs.append(([match.player_1, match.score_player_1], [match.player_2, match.score_player_2]))
-        print()
+
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_matchs)
           
     
@@ -176,16 +185,7 @@ class Match:
         self.player_2 = player_2
         self.score_player_1 = score_player_1
         self.score_player_2 = score_player_2
-        
-    # def create_instance(self, list_of_player):
-    #     player_1 = list_of_player[0]
-    #     player_2 = list_of_player[1]
-    #     score_player_1 = 0
-    #     score_player_2 = 0  
-    #     name = "match" + str(match.MATCH_NUMBER)
-    #     match.MATCH_NUMBER += 1
-    #     return match(name, player_1, player_2, score_player_1, score_player_2)
-    
+           
     def __str__(self):
         return f"{self.name} : {self.player_1} --CONTRE-- {self.player_2}."
 
