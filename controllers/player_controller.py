@@ -4,8 +4,8 @@ import pandas as pd
 from controllers import main_control
 import controllers
 from models import player_model
-import models
 from views import view_main
+from controllers import create_menus
 
 
 class CreatePlayerController:
@@ -13,8 +13,6 @@ class CreatePlayerController:
     def __init__(self):
         self.player_values = []
         self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Classement"]
-        
-        
 
     def __call__(self): 
         self.player_model = player_model.Player()
@@ -125,33 +123,35 @@ class CreatePlayerController:
 
 
 class PlayerReport:
-    """Display the player's report"""
+    """Display the players reports"""
 
     def __init__(self):
         pass
 
     def __call__(self):
+        self.create_menu = create_menus.CreateMenus()
+        self.home_menu_controller = main_control.HomeMenuController()
         self.display_player = view_main.DisplayPlayersReport()
-        self.players_database = models.player_model.player_database
-        self.player = models.player_model.Player()
+        self.players_database = player_model.player_database
+        self.player = player_model.Player()
         player_serialized = []
         
         for player in self.players_database:
             player_serialized.append(self.player.unserialized(player))
 
         self.display_player()
-        choice = input("--> ")
-        #TODO vérifier les inputs
-        if choice =="1":
+        entry = self.create_menu(self.create_menu.players_report_menu)
+        
+        if entry =="1":
             player_serialized.sort(key=attrgetter("last_name"))
             self.display_player.display_alphabetical(player_serialized)
             PlayerReport.__call__(self)
-        if choice =="2":
+        if entry =="2":
             player_serialized.sort(key=attrgetter("ranking"))
             self.display_player.display_ranking(player_serialized)
             PlayerReport.__call__(self)
-        if choice == "3":
-            main_control.HomeMenuController()
+        if entry == "3":
+            self.home_menu_controller()
 
 
        

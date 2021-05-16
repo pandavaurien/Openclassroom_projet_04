@@ -54,7 +54,7 @@ class PlayerMenuController(HomeMenuController):
         if entry == "2":
             self.choosen_controller = self.player_model.update_ranking() 
         if entry == "3":
-            self.choosen_controller = self.players_report
+            self.choosen_controller = self.players_report()
         if entry == "4":
             self.choosen_controller = self.home_menu_controller()
 
@@ -62,6 +62,7 @@ class PlayerMenuController(HomeMenuController):
 class TournamentMenuController(HomeMenuController):
     def __init__ (self):
         super().__init__()
+        self.tournament_report_controller = tournament_controller.TournamentReport()
         self.create_tournament = tournament_controller.CreateTournamentController()
         self.home_menu_controller = HomeMenuController()
         self.start_tournament = tournament_controller.StartTournament()
@@ -72,7 +73,7 @@ class TournamentMenuController(HomeMenuController):
         if entry == "2":
             self.choosen_controller = self.start_tournament()
         if entry == "3":
-            pass
+            self.choosen_controller = self.tournament_report_controller()
         if entry == "4":
             self.choosen_controller = self.home_menu_controller()
 

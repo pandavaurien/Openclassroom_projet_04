@@ -102,12 +102,8 @@ class DisplayPlayersReport:
               "-------------Affichages des joueurs-------------\n"
               "------------------------------------------------\n"
               " Afficher les rapports :\n"
-              "1 - Par ordre alphabétique\n"
-              "2 - Par ordre de classement\n"
-              "3 - Pour revenir au menu principal\n"
               )
         
-
     def display_alphabetical(self, players_list):
         for player in players_list:
             print(f"{player.last_name} {player.first_name} - {player.birthdate} - {player.gender} - Classement : {player.ranking}")
@@ -121,3 +117,24 @@ class DisplayPlayersReport:
             print(f"Classement :{player.ranking} - {player.last_name} {player.first_name} - {player.birthdate} - {player.gender}")
         print("Appuyer sur une touche pour revenir au menu rapport")
         input()
+
+
+class DisplayTournamentsReport:
+
+    def __call__(self):
+            print("------------------------------------------------\n"
+                  "--------------Rapport des tournois--------------\n"
+                  "------------------------------------------------\n"
+                  " Afficher les rapports :\n"
+                  )
+
+    def display_tournaments(self, tournaments_list, players_list):
+        for tournament in tournaments_list:
+            print(f"{tournament.tournament_name} - {tournament.location} - {tournament.tournament_date}\n"
+                  f"Nombre de tours : {tournament.number_of_tours}\n"
+                  f"Contrôle du temps : {tournament.time_control}\n"
+                  f"Description : {tournament.description}\n"
+                  )       
+            for player in players_list:
+                print(f"Joueurs : {player.last_name} - {player.first_name} - Classement : {player.ranking}")
+            print()
