@@ -3,6 +3,7 @@
 class CreateMenus:
     """Create the main menu, and then
     leads to branchs of menus according to the number choosen"""
+    
     main_menu = [("1", "Menu Joueur"),
                  ("2", "Menu Tournoi"),
                  ("3", "Quitter")
@@ -40,12 +41,6 @@ class CreateMenus:
                                  ("3", "Afficher les matchs"),
                                  ("4", "Retour au menu principal")
                                  ]
-
-
-
-
-    def __init__(self):
-        pass
 
     def __call__(self, menu_to_display):
         """Display a menu and ask the user to choose"""

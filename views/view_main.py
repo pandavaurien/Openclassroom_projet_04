@@ -113,7 +113,6 @@ class DisplayPlayersReport:
 
     def display_ranking(self, players_list):
         for player in players_list:
-            # player.ranking = int(player.ranking)
             print(f"Classement :{player.ranking} - {player.last_name} {player.first_name} - {player.birthdate} - {player.gender}")
         print("Appuyer sur une touche pour revenir au menu rapport")
         input()
@@ -138,3 +137,7 @@ class DisplayTournamentsReport:
             for player in players_list:
                 print(f"Joueurs : {player.last_name} - {player.first_name} - Classement : {player.ranking}")
             print()
+        input("Appuyez sur une touche pour revenir au menu principal")
+
+    def choose_a_tournament(self):
+        print(pd.read_json("models/tournament.json"))

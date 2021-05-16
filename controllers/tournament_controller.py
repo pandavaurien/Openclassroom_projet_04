@@ -201,9 +201,6 @@ class CreateTournamentController:
 
         for player in self.players_serialized:
             self.players_ids.append(player.doc_id)
-            # ply = player_model.player_database.search(Query()["Nom"] == player["Nom"])
-            # print(ply)
-            # self.players_ids.append(ply.doc_id)
         self.tournament_values.append(self.players_ids.copy())
 
         
@@ -239,6 +236,8 @@ class StartTournament:
         # Add the tournament infos from the object to the database
         Name = Query()
         db_tournament = tournament_model.tournament_database
+        tours_table = db_tournament.table("tours")
+        matchs_table = db_tournament.table("matchs")
         db_players = player_model.player_database
         tournament_table = db_tournament.get(Name["Nom du tournoi"] == self.tournament_object.tournament_name)
         tournament_serialized = self.tournament_object.serialized()
@@ -379,24 +378,25 @@ class TournamentReport:
     """Display the tournament reports"""
 
     def __call__(self):
+        self.clear = view_main.ClearScreen()
         self.create_menu = create_menus.CreateMenus()
         self.display_tournament = view_main.DisplayTournamentsReport()
+        self.display_player = view_main.DisplayPlayersReport()
         self.home_menu_controller = main_control.HomeMenuController()
-
+        
         self.players_database = player_model.player_database
         self.player = player_model.Player()
         player_serialized = []
         self.tournament_database = tournament_model.tournament_database
         self.tournament = tournament_model.Tournament()
         tournament_serialized = []
+        tournament_objects = []
 
         for tournament in self.tournament_database:
+            tournament_objects.append(tournament)
             tournament_serialized.append(self.tournament.unserialized(tournament))
 
-        # for player in self.players_database:
-        #     player_serialized.append(self.player.unserialized(player))
-
-        view_main.ClearScreen()            
+        self.clear()                 
         self.display_tournament()
         entry = self.create_menu(self.create_menu.tournaments_report_menu)
 
@@ -407,17 +407,56 @@ class TournamentReport:
                     player_serialized.append(self.player.unserialized(player))
             self.display_tournament.display_tournaments(tournament_serialized, player_serialized)
             player_serialized.clear()
+            self.home_menu_controller()
             
         if entry == "2":
-            pass # choisir un tournoi
-            # if self.tournament_object.list_of_tours == []:
-            #     print("\nLe tournoi n'a pas encore eu lieu, vous ne pouvez pas afficher les résultats\n")
-            #     time.sleep(1)
+            self.display_tournament.choose_a_tournament()
+            while True:
+                print("Entrez le numéro correspondant")
+                choice_id = input("-->")
 
-        if entry == "3":
-            pass # retour au menu principal
+                for tournament in tournament_objects:
+                    if int(choice_id) == tournament.doc_id:
+                        tournament_object = self.tournament_database.get(doc_id=int(choice_id))
+                        tournament_object = self.tournament.unserialized(tournament_object)
+                        if tournament_object.list_of_tours == []:
+                            print("\nLe tournoi n'a pas encore eu lieu, vous ne pouvez pas afficher les résultats\n")
+                            time.sleep(1)
+                        
+                        else:
+                            entry = self.create_menu(self.create_menu.tournaments_report_menu_2)
+                            if entry == "1":
+                                entry = self.create_menu(self.create_menu.players_report_menu)
+                                if entry == "1":
+                                    for id in tournament_object.players_ids:
+                                        player = self.players_database.get(doc_id=int(id))
+                                        player_serialized.append(self.player.unserialized(player))
+                                    player_serialized.sort(key=attrgetter("last_name"))
+                                    self.display_player.display_alphabetical(player_serialized)
+                                    player_serialized.clear()
+                                    TournamentReport.__call__(self)
+                                if entry == "2":
+                                    for id in tournament_object.players_ids:
+                                        player = self.players_database.get(doc_id=int(id))
+                                        player_serialized.append(self.player.unserialized(player))
+                                    player_serialized.sort(key=attrgetter("ranking"))
+                                    self.display_player.display_ranking(player_serialized)
+                                    player_serialized.clear()
+                                    TournamentReport.__call__(self)
+                            if entry == "2":
+                                for tour in tournament_object.list_of_tours:
+                                    print(tour)
+                            if entry == "3":
+                                pass # afficher les matchs
+                            if entry == "4":
+                                self.home_menu_controller()
+
+                print("Vous devez entrer le numéro correspondant au tournoi")
     
-    def enter_second_tournament_report_menu (self):
+        if entry == "3":
+            self.home_menu_controller()
+    
+    def enter_second_tournament_report_menu(self, tournament_object):
         
         entry = self.create_menu(self.create_menu.tournaments_report_menu_2)
 
