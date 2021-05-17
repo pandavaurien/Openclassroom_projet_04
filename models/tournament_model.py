@@ -118,6 +118,7 @@ class Tour:
                     list_of_finished_matchs
                     )
 
+
     def __repr__(self):
         return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}.\n\n{self.list_of_finished_matchs}\n\n"
         
@@ -125,7 +126,7 @@ class Tour:
         self.view = view_main.TourDisplay()
         self.list_of_tours = []
         self.list_of_finished_matchs = []
-        self.name = "Tour n°" + str(Tour.TOUR_NUMBER)
+        self.name = "Tour " + str(Tour.TOUR_NUMBER)
         Tour.TOUR_NUMBER += 1
         
         self.begin_time, self.end_time = self.view.display_tournament_time()
