@@ -214,7 +214,6 @@ class StartTournament:
                                     
     def __call__(self):
         self.sorted_players = []
-        tour_to_db = []
         self.tournament_menu_controller = main_control.TournamentMenuController()
         self.tour = tournament_model.Tour()
         self.view_final_scores = view_main.EndTournamentDisplay()
@@ -232,20 +231,25 @@ class StartTournament:
             self.sorted_players.clear()
             self.sorted_players = self.sort_players_by_score(self.tournament_object.list_of_tours[tour])
             self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players))
-            
-        # Add the tournament infos from the object to the database
+        
+        self.add_tournament_to_db(self.tournament_object)
+
+    def add_tournament_to_db(self, tournament_object):
         Name = Query()
+        tour_to_db = []
+        tour_ids = []
         db_tournament = tournament_model.tournament_database
-        tours_table = db_tournament.table("tours")
-        matchs_table = db_tournament.table("matchs")
         db_players = player_model.player_database
-        tournament_table = db_tournament.get(Name["Nom du tournoi"] == self.tournament_object.tournament_name)
+        tournament_id = db_tournament.get(Name["Nom du tournoi"] == self.tournament_object.tournament_name).doc_id
+        # tournament_table = db_tournament.table("_default")
+        tours_table = db_tournament.table("tours")
+
         tournament_serialized = self.tournament_object.serialized()
         
         for tour in tournament_serialized['Tours']:
-            tour_serialized = tour.serialized()
+            tour_serialized = tour.serialized()         
+            tour_to_db.clear()
             for match in tour_serialized['Matchs']:
-                
                 player_1_and_result = []
                 player_2_and_result = []
                 player_1_id = db_players.get(Name["Nom"] == match[0][0].last_name).doc_id
@@ -254,15 +258,16 @@ class StartTournament:
                 player_2_id = db_players.get(Name["Nom"] == match[1][0].last_name).doc_id
                 player_2_and_result = [player_2_id, match[1][1]]
                 print(player_2_and_result)               
-                match_to_db = (player_1_and_result, player_2_and_result)
-                tour_to_db.append(match_to_db)
+                tour_to_db.append([player_1_and_result, player_2_and_result])
+            tour_id = tours_table.insert({"Matchs" :tour_to_db})
+            tour_ids.append(tour_id)    
+               
+                
+            db_tournament.update({"Tours" : tour_ids}, doc_ids=[tournament_id])
+
         print(tour_to_db)
-        input()   
-        print(tournament_table)
-        input()
-        print(tournament_table.doc_id)
         input()           
-        db_tournament.update({"Tours" : tour_to_db}, doc_ids=[tournament_table.doc_id])
+        # db_tournament.update({"Tours" : tour_to_db}, doc_ids=[tournament_table.doc_id])
                 
         self.view_final_scores(self.tournament_object)
                
@@ -455,19 +460,6 @@ class TournamentReport:
     
         if entry == "3":
             self.home_menu_controller()
-    
-    def enter_second_tournament_report_menu(self, tournament_object):
-        
-        entry = self.create_menu(self.create_menu.tournaments_report_menu_2)
-
-        if entry == "1":
-            pass # Afficher les joueurs
-        if entry == "2":
-            pass # afficher les tours
-        if entry == "3":
-            pass # afficher les matchs
-        if entry == "4":
-            pass # retour au menu principal
 
 
 

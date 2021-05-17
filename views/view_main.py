@@ -1,6 +1,6 @@
-import datetime
+import time
 from os import system, name
-from numpy import format_float_positional
+# from numpy import format_float_positional
 import pandas as pd
 
 from models import tournament_model
@@ -66,12 +66,13 @@ class TourDisplay:
         print()
         input("Appuyez sur une touche pour commencer le tour")
         print()
-        begin_time = datetime.datetime.now()
+        # begin_time = time.localtime()
+        begin_time = time.strftime(format("%d/%m/%Y - %Hh%Mm%Ss"))
         print(f"Début du tour : {begin_time}")
         print()
         input("Appuyez sur une touche lorsque le tour est terminé")
         print()
-        end_time = datetime.datetime.now()
+        end_time = time.strftime(format("%d/%m/%Y - %Hh%Mm%Ss"))
         print(f"Fin du tour : {end_time}")
         print()
         return begin_time, end_time

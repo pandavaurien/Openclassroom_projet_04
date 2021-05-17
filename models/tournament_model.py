@@ -102,7 +102,7 @@ class Tour:
     def serialized(self):
         tour_infos = {}
         tour_infos['Nom'] = self.name
-        tour_infos['Debut'] = self.begin_time
+        tour_infos['Debut'] = self.begin_time 
         tour_infos['Fin'] = self.end_time
         tour_infos['Matchs'] = self.list_of_finished_matchs
         return tour_infos
