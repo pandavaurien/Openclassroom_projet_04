@@ -17,8 +17,9 @@ class CreateMenus:
     
     tournament_menu = [("1", "Créer un nouveau tournoi"),
                        ("2", "Lancer un tournoi existant"),
-                       ("3", "Afficher un rapport"),
-                       ("4", "Retour au menu principal")
+                       ("3", "Reprendre un tournoi en cours")
+                       ("4", "Afficher un rapport"),
+                       ("5", "Retour au menu principal")
                        ]
 
     time_control_menu = [("1", "Bullet"),

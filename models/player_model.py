@@ -1,10 +1,11 @@
+import models
 import time
 
 from tinydb import TinyDB
 import pandas as pd
 
 from controllers import main_control
-# from controllers import player_controller
+from views import view_main
 
 player_database = TinyDB('models/players.json')
 
@@ -46,9 +47,10 @@ class Player:
         
     def update_ranking(self):
         self.home_menu_controller = main_control.HomeMenuController()
-        self.players_database = pd.read_json("models/players.json")
-        print(self.players_database)
-        print()
+        self.view_players = view_main.PlayersDiplay()
+        self.players_database = player_database
+
+        self.view_players()
   
         valid_id = False
         while not valid_id:

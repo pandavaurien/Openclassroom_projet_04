@@ -1,9 +1,8 @@
 import time
 from os import system, name
-# from numpy import format_float_positional
 import pandas as pd
 
-from models import tournament_model
+from models import player_model, tournament_model
 
 
 class MainDisplay:
@@ -35,8 +34,6 @@ class ClearScreen:
   
 class FrameDisplay:
     """Display the datas from a controller"""
-    def __init__(self):
-        pass
 
     def display_datas_in_a_frame(self, data, index=None, columns=None):
         display = pd.DataFrame(self, data, index, columns)
@@ -45,6 +42,27 @@ class FrameDisplay:
         print()
         print(display)
         print()
+
+
+class TournamentDisplay:
+    """Display the tournament details if it's not already played"""
+
+    def __call__(self):
+        tournaments_database = tournament_model.tournament_database
+        
+        for tournament in tournaments_database:
+            if tournament['Tours'] == []:
+                print(f"{tournament.doc_id} - Nom: {tournament['Nom du tournoi']} - Lieu: {tournament['Lieu']}")
+
+
+class PlayersDiplay:
+    """Display all the players in the database"""
+
+    def __call__(self):
+        players_database = player_model.player_database
+
+        for player in players_database:
+            print(f"{player.doc_id} - {player['Nom']} {player['Prenom']} - Classement : {player['Classement']}")
 
 
 class TourDisplay:
@@ -62,11 +80,9 @@ class TourDisplay:
             print()
 
     def display_tournament_time(self):
-
         print()
         input("Appuyez sur une touche pour commencer le tour")
         print()
-        # begin_time = time.localtime()
         begin_time = time.strftime(format("%d/%m/%Y - %Hh%Mm%Ss"))
         print(f"Début du tour : {begin_time}")
         print()
@@ -88,13 +104,6 @@ class EndTournamentDisplay:
               "------------------------------------------------\n")
        
         print(tournament_instance)
-
-        # for tour in tournament_instance.list_of_tours:
-        #     print(f"{tournament_instance.list_of_tours.begin_time} {tournament_instance.list_of_tours.end_time}")
-        # for rnds in tournament_instance.tour.list_of_finished_matchs:
-        #         print(rnds)
-                # print(f"{tour.list_of_finished_matchs[0][0]} ---CONTRE--- {tour.list_of_finished_matchs[0][1]}")
-
 
 class DisplayPlayersReport:
 

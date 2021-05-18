@@ -1,8 +1,6 @@
 from operator import attrgetter
-import pandas as pd
 
 from controllers import main_control
-import controllers
 from models import player_model
 from views import view_main
 from controllers import create_menus
@@ -13,6 +11,7 @@ class CreatePlayerController:
     def __init__(self):
         self.player_values = []
         self.player_keys = ["Nom", "Prénom", "Date de naissance", "Sexe", "Classement"]
+        self.home_menu_controller = main_control.HomeMenuController()
 
     def __call__(self): 
         self.player_model = player_model.Player()
@@ -24,7 +23,7 @@ class CreatePlayerController:
         if self.validate_player():
             self.player_model.add_to_database(self.player_values)
         self.player_values.clear()
-        main_control.HomeMenuController()
+        self.home_menu_controller()
         
     
     def add_last_name(self):
@@ -124,9 +123,6 @@ class CreatePlayerController:
 
 class PlayerReport:
     """Display the players reports"""
-
-    def __init__(self):
-        pass
 
     def __call__(self):
         self.create_menu = create_menus.CreateMenus()

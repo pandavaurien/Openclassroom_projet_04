@@ -87,6 +87,22 @@
             "Sexe": "Femme",
             "Classement": 36,
             "Score": 0
+        },
+        "12": {
+            "Nom": "Vignola",
+            "Prenom": "Amedée",
+            "Date de naissance": "23/06/1989",
+            "Sexe": "Homme",
+            "Classement": 27,
+            "Score": 0
+        },
+        "13": {
+            "Nom": "Cormen",
+            "Prenom": "Agnès",
+            "Date de naissance": "03/05/1990",
+            "Sexe": "Femme",
+            "Classement": 26,
+            "Score": 0
         }
     }
 }

@@ -1,5 +1,6 @@
 import time
 import copy
+import pickle
 from operator import itemgetter
 from operator import attrgetter
 
@@ -14,7 +15,7 @@ from views import view_main
 
 
 class CreateTournamentController:
-    """docstring"""
+    """Create a tournament with entyering all the details, then save it in the database"""
     
     def __init__(self):
         self.create_menu = create_menus.CreateMenus()
@@ -142,12 +143,6 @@ class CreateTournamentController:
             else:
                 print("Appuyez sur 'Y' ou 'N'")
 
-        if len(self.players_ids) >= 8: 
-            print()
-            print("Vous avez déjà 8 joueurs dans le tournoi")
-            time.sleep(2)
-            self.add_players_to_tournament()
-
         display_players_database = pd.read_json("models/players.json")
         print(display_players_database)
         print()
@@ -182,17 +177,11 @@ class CreateTournamentController:
             time.sleep(1)
             self.add_players_to_tournament()
 
-        # if len(self.players_ids) % 2 != 0:
-        #     print("Vous devez avoir un nombre de joueurs pair")
-        #     print()
-        #     time.sleep(1)
-        #     self.add_players_to_tournament()
-
         self.players_ids.append(id_choice)
         print("Joueurs dans le tournoi : " + str(self.players_ids))
         self.add_players_to_tournament()
         
-        # itère dans les ids de joueurs, puis classe les ids des joueurs par ordre de classement
+        # iterate in id's list, create instance of players, then order them by ranking.
         for id in self.players_ids:
             player = player_model.player_database.get(doc_id=id) 
             self.players_serialized.append(player)
@@ -205,12 +194,9 @@ class CreateTournamentController:
 
         
 class StartTournament:
-    """Docstring"""
+    """Controller who start the tournament, stop when the tournament is ended"""
 
     MATCHS_PLAYED = []
-
-    def __init__(self):
-        pass
                                     
     def __call__(self):
         self.sorted_players = []
@@ -260,21 +246,29 @@ class StartTournament:
                 tour_to_db.append([player_1_and_result, player_2_and_result])
             tour_serialized['Matchs'] = None
             tour_serialized['Matchs'] = tour_to_db
-            tour_id = tours_table.insert(tour_serialized) #{"Matchs" :tour_to_db}
+            tour_id = tours_table.insert(tour_serialized)
             tour_ids.append(tour_id)    
             db_tournament.update({"Tours" : tour_ids}, doc_ids=[tournament_id])
 
         print(tour_to_db)
         input()
+
+    def save_tournament_statement(self, tournament_object):
+        choice = input("Voulez-vous sauvegarger ? Y/N")
+        if choice == "Y":
+            pickle.dump(tournament_object)
+    
+    def load_tournament_statement(self):
+        tournament_object = pickle.load
                 
         
                
     def select_a_tournament(self):
         self.tournament = tournament_model.Tournament()
+        self.display_tournaments = view_main.TournamentDisplay()
 
-        display_tournament = pd.read_json("models/tournament.json")
-        print(display_tournament) #TODO Afficher dans le view
-
+        self.display_tournaments()
+        
         valid_entry = False
         while not valid_entry:
             print("Entrez le chiffre correspondant au tournoi")
@@ -417,7 +411,8 @@ class TournamentReport:
         if entry == "2":
         # Choose a tournament
             self.display_tournament.choose_a_tournament()
-            while True:
+            valid_choice = True
+            while valid_choice:
                 print("Entrez le numéro correspondant")
                 choice_id = input("-->")
 
@@ -477,7 +472,8 @@ class TournamentReport:
                                         player_2 = match[1][0]
                                         player_2 = self.players_database.get(doc_id=player_2)
                                         score_player_2 = match [1][1]
-                                        print(f"{player_1['Nom']} {player_1['Prenom']} CONTRE {player_2['Nom']} {player_2['Prenom']}\n"
+                                        print(f"{player_1['Nom']} {player_1['Prenom']} CONTRE "
+                                              f"{player_2['Nom']} {player_2['Prenom']}\n"
                                               f"Score : {score_player_1} -- {score_player_2}\n")
 
                                 input("Appuyez sur une touche pour revenir au menu rapport de tournoi")
@@ -485,14 +481,15 @@ class TournamentReport:
                                     
                             if entry == "4":
                             # Go to main menu
-                                break
+                                valid_choice = False
                                 self.home_menu_controller()
-
-                print("Vous devez entrer le numéro correspondant au tournoi")
-    
+           
         if entry == "3":
             # Go to main menu
+            valid_choice = False
             self.home_menu_controller()
+
+        print("Vous devez entrer le numéro correspondant au tournoi")
 
 
 
