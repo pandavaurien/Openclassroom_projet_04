@@ -253,7 +253,7 @@ class StartTournament:
         input()
 
     def save_tournament_statement(self, tournament_object):
-        choice = input("Voulez-vous sauvegarger ? Y/N")
+        choice = input("Voulez-vous sauvegarder ? Y/N")
         if choice == "Y":
             pass
     

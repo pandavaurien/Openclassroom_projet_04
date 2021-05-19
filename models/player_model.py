@@ -1,8 +1,8 @@
-import models
+# import models
 import time
 
 from tinydb import TinyDB
-import pandas as pd
+# import pandas as pd
 
 from controllers import main_control
 from views import view_main
@@ -87,7 +87,8 @@ class Player:
                         player_values[4],
                         player_values[5]
                         )
-        player_database.insert(player.serialized())
+        player_id = player_database.insert(player.serialized())
+        player_database.update({'Id du joueur' : player_id}, doc_ids=[player_id])
         time.sleep(2)
 
 
