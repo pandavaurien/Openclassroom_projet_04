@@ -1,6 +1,5 @@
 import time
 import copy
-import pickle
 from operator import itemgetter
 from operator import attrgetter
 
@@ -256,10 +255,10 @@ class StartTournament:
     def save_tournament_statement(self, tournament_object):
         choice = input("Voulez-vous sauvegarger ? Y/N")
         if choice == "Y":
-            pickle.dump(tournament_object)
+            pass
     
     def load_tournament_statement(self):
-        tournament_object = pickle.load
+        pass
                 
         
                
