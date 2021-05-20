@@ -1,11 +1,11 @@
 import time
 import copy
-import pickle
 from operator import itemgetter
 from operator import attrgetter
 
 import pandas as pd
 from tinydb import TinyDB, Query
+from tinydb.table import Document
 
 from controllers import main_control
 from controllers import create_menus
@@ -197,6 +197,7 @@ class StartTournament:
     """Controller who start the tournament, stop when the tournament is ended"""
 
     MATCHS_PLAYED = []
+    TOURS_PLAYED = []
                                     
     def __call__(self):
         self.sorted_players = []
@@ -211,78 +212,134 @@ class StartTournament:
             self.tournament_menu_controller()
         self.sorted_players = self.sort_player_first_tour(self.tournament_object) # copy in the list "sorted_players" the players by ranking
         self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players)) # 1st tour, copy the instance in tournament
+        self.save_tournament_statement(self.tournament_object)
         
         # all the others tours
         for tour in range(int(self.tournament_object.number_of_tours) - 1):
             self.sorted_players.clear()
             self.sorted_players = self.sort_players_by_score(self.tournament_object.list_of_tours[tour])
             self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players))
-        
-        self.add_tournament_to_db(self.tournament_object)
+            self.save_tournament_statement(self.tournament_object)
+       
         self.view_final_scores(self.tournament_object)
-
-    def add_tournament_to_db(self, tournament_object):
-        Name = Query()
-        tour_to_db = []
-        tour_ids = []
-        db_tournament = tournament_model.tournament_database
-        db_players = player_model.player_database
-        tournament_id = db_tournament.get(Name["Nom du tournoi"] == tournament_object.tournament_name).doc_id
-        tours_table = db_tournament.table("tours")
-        tournament_serialized = tournament_object.serialized()
-        
-        for tour in tournament_serialized['Tours']:
-            tour_serialized = tour.serialized()         
-            tour_to_db.clear()
-            for match in tour_serialized['Matchs']:
-                player_1_and_result = []
-                player_2_and_result = []
-                player_1_id = db_players.get(Name["Nom"] == match[0][0].last_name).doc_id
-                player_1_and_result = [player_1_id, match[0][1]]
-                print(player_1_and_result)
-                player_2_id = db_players.get(Name["Nom"] == match[1][0].last_name).doc_id
-                player_2_and_result = [player_2_id, match[1][1]]
-                print(player_2_and_result)               
-                tour_to_db.append([player_1_and_result, player_2_and_result])
-            tour_serialized['Matchs'] = None
-            tour_serialized['Matchs'] = tour_to_db
-            tour_id = tours_table.insert(tour_serialized)
-            tour_ids.append(tour_id)    
-            db_tournament.update({"Tours" : tour_ids}, doc_ids=[tournament_id])
-
-        print(tour_to_db)
-        input()
+      
 
     def save_tournament_statement(self, tournament_object):
-        choice = input("Voulez-vous sauvegarger ? Y/N")
-        if choice == "Y":
-            pickle.dump(tournament_object)
-    
-    def load_tournament_statement(self):
-        tournament_object = pickle.load
-                
+
+        self.home_menu_controller = main_control.HomeMenuController()
+        db_tournament = tournament_model.tournament_database
+        tours_table = db_tournament.table("tours")
         
+        tour_object = tournament_object.list_of_tours[-1]
+        tour_serialized = tour_object.serialized()
+        tour_serialized['Matchs'] = tour_object.list_of_finished_matchs
+
+        tour_id = tours_table.insert(tour_serialized)
+        StartTournament.TOURS_PLAYED.append(tour_id)    
+        db_tournament.update({"Tours" : StartTournament.TOURS_PLAYED}, doc_ids=[tournament_object.tournament_id])
+
+        print("Voulez vous sauvegarder et quitter le tournoi en cours ? Y / N")
+        while True:
+            choice = input("-->")
+            if choice == 'Y':
+                self.home_menu_controller()
+            if choice == 'N':
+                break                
+            print("Vous devez entrer 'Y' ou 'N'")
+
+        # Name = Query()
+        # db_tournament = tournament_model.tournament_database
+        # tours_table = db_tournament.table("tours")
+        # # tournament_serialized = tournament_object.serialized()
+        # tour_to_db = []
+        # for tour in tournament_serialized['Tours']:
+        #     tour_serialized = tour.serialized() 
+        #     for match in tour_serialized['Matchs']:
+        #         # player_1_and_result = []
+        #         # player_2_and_result = []
+        #         # player_1_id = match[0][0].player_id
+        #         player_1_and_result = [match[0][0], match[0][1]]
+        #         # print(player_1_and_result)
+        #         # player_2_id = db_players.get(Name["Nom"] == match[1][0].last_name).doc_id
+        #         player_2_and_result = [match[1][0], match[1][1]]
+        #         # print(player_2_and_result)               
+        #         tour_to_db.append([player_1_and_result, player_2_and_result])    
+        #     tour_serialized['Matchs'] = tour_to_db
+        #     tour_id = tours_table.insert(tour_serialized)
+        #     tour_ids.append(tour_id)    
+        #     db_tournament.update({"Tours" : tour_ids}, doc_ids=[tournament_object.tournament_id])
+       
+                    
+    def load_tournament_statement(self):
+        # choisir un tournoi et calculer le nombre de tours restant
+        sorted_players = []
+        self.tournament = tournament_model.Tournament()
+        self_display_tournament = view_main.LoadTournamentDisplay()
+        self.home_menu_controller = main_control.HomeMenuController()
+        self.tour = tournament_model.Tour()
+        self.view_final_scores = view_main.EndTournamentDisplay()
+        db_tournament = tournament_model.tournament_database
+        tours_table = db_tournament.table("tours")
+        tours_instances = []
+
+        if self_display_tournament(): # True if there is tournaments already started 
+            valid_entry = False
+            while not valid_entry:
+                print("Entrez le chiffre correspondant au tournoi")
+                choice = input("--> ")
+                try:
+                    int(choice)
+                    valid_entry = True
+                except Exception:
+                    print("Vous devez entrer le chiffre correspondant au tournoi")
+            else:
+                choosen_tournament = tournament_model.tournament_database.get(doc_id=int(choice))
+                for tour in choosen_tournament["Tours"]: #TODO les noms des instances de tour redémarre à 1
+                    tour_serialized = tours_table.get(doc_id=tour) # TODO efface la valeur de 'Tours' dans le tournoi au lieu de la mettre à jour
+                    tour_object = self.tour.unserialized(tour_serialized)
+                    tours_instances.append(tour_object)
+                choosen_tournament["Tours"] = tours_instances
+                tournament_object = self.tournament.unserialized(choosen_tournament)
+                input()
+                
+                
+               
+        else:
+            print("Pas de tournoi en cours, retour au menu principal")
+            time.sleep(1)
+            self.home_menu_controller()
+        
+        for tour in range(tournament_object.number_of_tours - len(tournament_object.list_of_tours)):
+            sorted_players.clear()
+            sorted_players = self.sort_players_by_score(tournament_object.list_of_tours[tour])
+            tournament_object.list_of_tours.append(self.tour.run(sorted_players))
+            self.save_tournament_statement(tournament_object)
+
+        self.view_final_scores(tournament_object)
                
     def select_a_tournament(self):
         self.tournament = tournament_model.Tournament()
         self.display_tournaments = view_main.TournamentDisplay()
+        self.home_menu_controller = main_control.HomeMenuController()
 
-        self.display_tournaments()
+        if self.display_tournaments():
         
-        valid_entry = False
-        while not valid_entry:
-            print("Entrez le chiffre correspondant au tournoi")
-            choice = input("--> ")
-            try:
-                choice.isdigit() == False
-                int(choice) > len(tournament_model.tournament_database)
-                int(choice) <= 0
-            except Exception:
-                print("Vous devez entrer le chiffre correspondant au tournoi")
-            else:
-                choosen_tournament = tournament_model.tournament_database.get(doc_id=int(choice))
-                tournament_object = self.tournament.unserialized(choosen_tournament)
-                return tournament_object
+            valid_entry = False
+            while not valid_entry:
+                print("Entrez le chiffre correspondant au tournoi") #TODO si pas de tournoi, revenir au menu principal
+                choice = input("--> ")
+                try:
+                    choice.isdigit() == False
+                    int(choice) < len(tournament_model.tournament_database)
+                    int(choice) <= 0
+                except Exception:
+                    print("Vous devez entrer le chiffre correspondant au tournoi")
+                else:
+                    choosen_tournament = tournament_model.tournament_database.get(doc_id=int(choice))
+                    tournament_object = self.tournament.unserialized(choosen_tournament)
+                    return tournament_object
+        else:
+            self.home_menu_controller()
 
     def sort_player_first_tour(self, tournament):
         """ return a list of players sorted by ranking"""
@@ -308,7 +365,7 @@ class StartTournament:
                 player_2 = players_instances[index_player_2]
                 sorted_players.append(player_1)
                 sorted_players.append(player_2)
-                self.MATCHS_PLAYED.append({player_1, player_2})
+                self.MATCHS_PLAYED.append({player_1.player_id, player_2.player_id})
             else:
                 pass
         
@@ -316,12 +373,14 @@ class StartTournament:
 
     def sort_players_by_score(self, tour_instance):
         """ return a list of players sorted by score"""
-        players = []
+        self.player = player_model.Player()
+        players = [] # liste avec [id_joueur, score]
         players_sorted_by_score = []
-        players_sorted_flat = []
+        players_sorted_flat = [] # liste avec [id_joueur]
+        players_instance = []
         match_to_try = set()
     
-        for match in tour_instance.list_of_finished_matchs:
+        for match in tour_instance.list_of_finished_matchs: #crée une liste d'id de joueur
             for player in match:
                 players.append(player)
         
@@ -331,40 +390,44 @@ class StartTournament:
             players_sorted_flat.append(player[0])
 
         players_sorted_by_score.clear()
-     
-        #Sort players by score, if score are equals, sort by rank.
-        players_sorted_flat.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
 
-        for player_1 in players_sorted_flat:
+        for player_id in players_sorted_flat:
+            player = player_model.player_database.get(doc_id=player_id)
+            players_instance.append(self.player.unserialized(player))
+
+        #Sort players by score, if score are equals, sort by rank.
+        players_instance.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
+
+        for player_1 in players_instance:
 
             if player_1 in players_sorted_by_score:
                 continue
             else:
                 try:
-                    player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+                    player_2 = players_instance[players_instance.index(player_1) + 1]
                 except:
                     break
                             
-            match_to_try.add(player_1) 
-            match_to_try.add(player_2) 
+            match_to_try.add(player_1.player_id) 
+            match_to_try.add(player_2.player_id) 
 
-            while match_to_try in self.MATCHS_PLAYED: # compare match_to_try avec les match déjà joués    
-                print(f"Le match {match_to_try} a déjà eu lieu")
+            while match_to_try in self.MATCHS_PLAYED: # compare match_to_try with matchs already played  
+                print(f"Le match {player_1} CONTRE {player_2} a déjà eu lieu")
                 time.sleep(1)
-                match_to_try.remove(player_2)                
+                match_to_try.remove(player_2.player_id)                
                 try:
-                    player_2 = players_sorted_flat[players_sorted_flat.index(player_2) + 1]
+                    player_2 = players_instance[players_instance.index(player_2) + 1]
                 except:
                     break
                 match_to_try.add(player_2)
                 continue
                     
             else:
-                print(f"Ajout du match {match_to_try}")
+                print(f"Ajout du match {player_1} CONTRE {player_2}")
                 players_sorted_by_score.append(player_1)
                 players_sorted_by_score.append(player_2)
-                players_sorted_flat.pop(players_sorted_flat.index(player_2))
-                self.MATCHS_PLAYED.append({player_1, player_2})
+                players_instance.pop(players_instance.index(player_2))
+                self.MATCHS_PLAYED.append({player_1.player_id, player_2.player_id})
                 match_to_try.clear()              
                 time.sleep(1)
 

@@ -24,8 +24,7 @@ class CreatePlayerController:
             self.player_model.add_to_database(self.player_values)
         self.player_values.clear()
         self.home_menu_controller()
-        
-    
+            
     def add_last_name(self):
         valid_last_name = False
         while not valid_last_name:

@@ -2,7 +2,8 @@ import time
 from os import system, name
 import pandas as pd
 
-from models import player_model, tournament_model
+from models import player_model
+from models import tournament_model
 
 
 class MainDisplay:
@@ -46,13 +47,20 @@ class FrameDisplay:
 
 class TournamentDisplay:
     """Display the tournament details if it's not already played"""
-
+    
     def __call__(self):
+        tournament_not_yet_started = False
         tournaments_database = tournament_model.tournament_database
-        
+                        
         for tournament in tournaments_database:
             if tournament['Tours'] == []:
                 print(f"{tournament.doc_id} - Nom: {tournament['Nom du tournoi']} - Lieu: {tournament['Lieu']}")
+                tournament_not_yet_started = True
+            else:
+                print("Pas de tournois créé, veuillez créer un tournoi")
+                time.sleep(1) 
+
+        return tournament_not_yet_started
 
 
 class PlayersDiplay:
@@ -96,7 +104,7 @@ class TourDisplay:
 
 class EndTournamentDisplay:
     """Display the final score at the end of the tournament"""
-    def __call__(self, tournament_instance):
+    def __call__(self, tournament_instance): #TODO Afficher les noms à la place des ids dans les résultats
         print("------------------------------------------------\n"
               "-----------------Fin du tournoi-----------------\n"
               "------------------------------------------------\n"
@@ -104,6 +112,7 @@ class EndTournamentDisplay:
               "------------------------------------------------\n")
        
         print(tournament_instance)
+
 
 class DisplayPlayersReport:
 
@@ -151,3 +160,38 @@ class DisplayTournamentsReport:
 
     def choose_a_tournament(self):
         print(pd.read_json("models/tournament.json"))
+
+
+class AskForContinuingTournament:
+    def __call__(self, choice):
+        print("Voulez vous sauvegarder et quitter le tournoi en cours ? Y / N")
+        valid_choice = True
+        while valid_choice:
+            choice = input("--->")
+            if choice == 'Y':
+                break
+            if choice == 'N':
+                self
+
+
+class LoadTournamentDisplay:
+    def __call__(self):
+        tournaments_in_progress = False
+
+        print("------------------------------------------------\n"
+              "--------------Reprendre un tournoi--------------\n"
+              "------------------------------------------------\n")
+        
+        for tournament in tournament_model.tournament_database:
+            if tournament["Tours"] != []:
+                if len(tournament["Tours"]) < tournament["Nombre de tours"]:
+                    print(f"{tournament['Id du tournoi']} - {tournament['Nom du tournoi']} {tournament['Lieu']}")
+                    tournaments_in_progress = True
+
+            else:
+                print("Il n'y a pas de tournoi en cours")
+                time.sleep(1) 
+        return tournaments_in_progress         
+
+        
+        

@@ -73,8 +73,10 @@ class TournamentMenuController(HomeMenuController):
         if entry == "2":
             self.choosen_controller = self.start_tournament()
         if entry == "3":
-            self.choosen_controller = self.tournament_report_controller()
+            self.choosen_controller = self.start_tournament.load_tournament_statement()
         if entry == "4":
+            self.choosen_controller = self.tournament_report_controller()
+        if entry == "5":
             self.choosen_controller = self.home_menu_controller()
 
 
