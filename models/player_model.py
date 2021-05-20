@@ -84,8 +84,7 @@ class Player:
                         player_values[1],
                         player_values[2],
                         player_values[3],
-                        player_values[4],
-                        player_values[5]
+                        player_values[4]                        
                         )
         player_id = player_database.insert(player.serialized())
         player_database.update({'Id du joueur' : player_id}, doc_ids=[player_id])

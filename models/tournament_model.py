@@ -18,7 +18,8 @@ class Tournament:
                        time_control=None, 
                        description=None,
                        players_ids=None,
-                       list_of_tours=[]
+                       list_of_tours=[],
+                       tournament_id = None
                        ):
 
         self.tournament_name = tournament_name
@@ -29,6 +30,8 @@ class Tournament:
         self.description = description
         self.players_ids = players_ids
         self.list_of_tours = list_of_tours
+        self.tournament_id = tournament_id
+
 
     def __repr__(self):
         return f"{self.tournament_name} - {self.location}\n\n {self.list_of_tours}\n"
@@ -43,6 +46,7 @@ class Tournament:
         tournament_infos['Description'] = self.description
         tournament_infos["Joueurs_id"] = self.players_ids
         tournament_infos["Tours"] = self.list_of_tours
+        tournament_infos["Id du tournoi"] = self.tournament_id
         
         return tournament_infos
 
@@ -55,6 +59,7 @@ class Tournament:
         description = serialized_tournament['Description']
         players_ids = serialized_tournament["Joueurs_id"]
         list_of_tours =serialized_tournament["Tours"]
+        tournament_id = serialized_tournament["Id du tournoi"]
         
         return Tournament(tournament_name, 
                           location,
@@ -63,7 +68,8 @@ class Tournament:
                           time_control,
                           description,
                           players_ids,
-                          list_of_tours                          
+                          list_of_tours,
+                          tournament_id                          
                           )
 
     def add_to_database(self, tournament_values):
@@ -75,7 +81,8 @@ class Tournament:
                                 tournament_values[5],
                                 tournament_values[6],
                                 )
-        tournament_database.insert(tournament.serialized())        
+        tournament_id = tournament_database.insert(tournament.serialized())
+        tournament_database.update({"Id du tournoi" : tournament_id}, doc_ids=[tournament_id])        
 
 
 class Tour:

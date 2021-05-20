@@ -49,7 +49,7 @@ class TournamentDisplay:
 
     def __call__(self):
         tournaments_database = tournament_model.tournament_database
-        
+                        
         for tournament in tournaments_database:
             if tournament['Tours'] == []:
                 print(f"{tournament.doc_id} - Nom: {tournament['Nom du tournoi']} - Lieu: {tournament['Lieu']}")
@@ -105,6 +105,7 @@ class EndTournamentDisplay:
        
         print(tournament_instance)
 
+
 class DisplayPlayersReport:
 
     def __call__(self):
@@ -151,3 +152,17 @@ class DisplayTournamentsReport:
 
     def choose_a_tournament(self):
         print(pd.read_json("models/tournament.json"))
+
+
+class AskForContinuingTournament:
+    def __call__(self, choice):
+        print("Voulez vous sauvegarder et quitter le tournoi en cours ? Y / N")
+        valid_choice = True
+        while valid_choice:
+            choice = input("--->")
+            if choice == 'Y':
+                break
+            if choice == 'N':
+                self
+
+
