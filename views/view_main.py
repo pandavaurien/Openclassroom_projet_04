@@ -2,7 +2,8 @@ import time
 from os import system, name
 import pandas as pd
 
-from models import player_model, tournament_model
+from models import player_model
+from models import tournament_model
 
 
 class MainDisplay:
@@ -46,13 +47,20 @@ class FrameDisplay:
 
 class TournamentDisplay:
     """Display the tournament details if it's not already played"""
-
+    
     def __call__(self):
+        tournament_not_yet_started = False
         tournaments_database = tournament_model.tournament_database
                         
         for tournament in tournaments_database:
             if tournament['Tours'] == []:
                 print(f"{tournament.doc_id} - Nom: {tournament['Nom du tournoi']} - Lieu: {tournament['Lieu']}")
+                tournament_not_yet_started = True
+            else:
+                print("Pas de tournois créé, veuillez créer un tournoi")
+                time.sleep(1) 
+
+        return tournament_not_yet_started
 
 
 class PlayersDiplay:
@@ -166,3 +174,24 @@ class AskForContinuingTournament:
                 self
 
 
+class LoadTournamentDisplay:
+    def __call__(self):
+        tournaments_in_progress = False
+
+        print("------------------------------------------------\n"
+              "--------------Reprendre un tournoi--------------\n"
+              "------------------------------------------------\n")
+        
+        for tournament in tournament_model.tournament_database:
+            if tournament["Tours"] != []:
+                if len(tournament["Tours"]) < tournament["Nombre de tours"]:
+                    print(f"{tournament['Id du tournoi']} - {tournament['Nom du tournoi']} {tournament['Lieu']}")
+                    tournaments_in_progress = True
+
+            else:
+                print("Il n'y a pas de tournoi en cours")
+                time.sleep(1) 
+        return tournaments_in_progress         
+
+        
+        
