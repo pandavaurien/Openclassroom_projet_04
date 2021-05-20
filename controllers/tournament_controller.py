@@ -266,7 +266,17 @@ class StartTournament:
         tour_ids = []
         
         for tour in tournament_serialized['Tours']:
-            tour_serialized = tour.serialized()     
+            tour_serialized = tour.serialized() 
+            for match in tour_serialized['Matchs']:
+                # player_1_and_result = []
+                # player_2_and_result = []
+                # player_1_id = match[0][0].player_id
+                player_1_and_result = [match[0][0], match[0][1]]
+                # print(player_1_and_result)
+                # player_2_id = db_players.get(Name["Nom"] == match[1][0].last_name).doc_id
+                player_2_and_result = [match[1][0], match[1][1]]
+                # print(player_2_and_result)               
+                tour_to_db.append([player_1_and_result, player_2_and_result])    
             tour_serialized['Matchs'] = tour_to_db
             tour_id = tours_table.insert(tour_serialized)
             tour_ids.append(tour_id)    
@@ -331,7 +341,7 @@ class StartTournament:
         
         valid_entry = False
         while not valid_entry:
-            print("Entrez le chiffre correspondant au tournoi")
+            print("Entrez le chiffre correspondant au tournoi") #TODO si pas de tournoi, revenir au menu principal
             choice = input("--> ")
             try:
                 choice.isdigit() == False
@@ -368,7 +378,7 @@ class StartTournament:
                 player_2 = players_instances[index_player_2]
                 sorted_players.append(player_1)
                 sorted_players.append(player_2)
-                self.MATCHS_PLAYED.append({player_1, player_2})
+                self.MATCHS_PLAYED.append({player_1.player_id, player_2.player_id})
             else:
                 pass
         
@@ -376,12 +386,14 @@ class StartTournament:
 
     def sort_players_by_score(self, tour_instance):
         """ return a list of players sorted by score"""
-        players = []
+        self.player = player_model.Player()
+        players = [] # liste avec [id_joueur, score]
         players_sorted_by_score = []
-        players_sorted_flat = []
+        players_sorted_flat = [] # liste avec [id_joueur]
+        players_instance = []
         match_to_try = set()
     
-        for match in tour_instance.list_of_finished_matchs:
+        for match in tour_instance.list_of_finished_matchs: #crée une liste d'id de joueur
             for player in match:
                 players.append(player)
         
@@ -391,40 +403,44 @@ class StartTournament:
             players_sorted_flat.append(player[0])
 
         players_sorted_by_score.clear()
-     
-        #Sort players by score, if score are equals, sort by rank.
-        players_sorted_flat.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
 
-        for player_1 in players_sorted_flat:
+        for player_id in players_sorted_flat:
+            player = player_model.player_database.get(doc_id=player_id)
+            players_instance.append(self.player.unserialized(player))
+
+        #Sort players by score, if score are equals, sort by rank.
+        players_instance.sort(key=attrgetter("tournament_score", 'ranking'), reverse=True)
+
+        for player_1 in players_instance:
 
             if player_1 in players_sorted_by_score:
                 continue
             else:
                 try:
-                    player_2 = players_sorted_flat[players_sorted_flat.index(player_1) + 1]
+                    player_2 = players_instance[players_instance.index(player_1) + 1]
                 except:
                     break
                             
-            match_to_try.add(player_1) 
-            match_to_try.add(player_2) 
+            match_to_try.add(player_1.player_id) 
+            match_to_try.add(player_2.player_id) 
 
-            while match_to_try in self.MATCHS_PLAYED: # compare match_to_try avec les match déjà joués    
-                print(f"Le match {match_to_try} a déjà eu lieu")
+            while match_to_try in self.MATCHS_PLAYED: # compare match_to_try with matchs already played  
+                print(f"Le match {player_1} CONTRE {player_2} a déjà eu lieu")
                 time.sleep(1)
-                match_to_try.remove(player_2)                
+                match_to_try.remove(player_2.player_id)                
                 try:
-                    player_2 = players_sorted_flat[players_sorted_flat.index(player_2) + 1]
+                    player_2 = players_instance[players_instance.index(player_2) + 1]
                 except:
                     break
                 match_to_try.add(player_2)
                 continue
                     
             else:
-                print(f"Ajout du match {match_to_try}")
+                print(f"Ajout du match {player_1} CONTRE {player_2}")
                 players_sorted_by_score.append(player_1)
                 players_sorted_by_score.append(player_2)
-                players_sorted_flat.pop(players_sorted_flat.index(player_2))
-                self.MATCHS_PLAYED.append({player_1, player_2})
+                players_instance.pop(players_instance.index(player_2))
+                self.MATCHS_PLAYED.append({player_1.player_id, player_2.player_id})
                 match_to_try.clear()              
                 time.sleep(1)
 

@@ -96,7 +96,7 @@ class TourDisplay:
 
 class EndTournamentDisplay:
     """Display the final score at the end of the tournament"""
-    def __call__(self, tournament_instance):
+    def __call__(self, tournament_instance): #TODO Afficher les noms à la place des ids dans les résultats
         print("------------------------------------------------\n"
               "-----------------Fin du tournoi-----------------\n"
               "------------------------------------------------\n"

@@ -173,7 +173,7 @@ class Tour:
                     match.player_2.tournament_score += float(score_player_2)
                     valid_score_player_2 = True
             
-            self.list_of_finished_matchs.append(([match.player_1, match.score_player_1], [match.player_2, match.score_player_2]))
+            self.list_of_finished_matchs.append(([match.player_1.player_id, match.score_player_1], [match.player_2.player_id, match.score_player_2]))
 
         return Tour(self.name, self.begin_time, self.end_time, self.list_of_finished_matchs)
           
