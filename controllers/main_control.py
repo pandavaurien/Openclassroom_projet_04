@@ -1,3 +1,5 @@
+import sys
+
 from views import view_main
 from controllers import create_menus
 from controllers import player_controller
@@ -47,6 +49,7 @@ class PlayerMenuController(HomeMenuController):
         self.players_report = player_controller.PlayerReport()
         self.home_menu_controller = HomeMenuController()
         self.player_model = player_model.Player()
+
     def __call__(self):
         entry = self.create_menu(self.create_menu.player_menu)
         if entry == "1":
@@ -60,6 +63,7 @@ class PlayerMenuController(HomeMenuController):
 
 
 class TournamentMenuController(HomeMenuController):
+
     def __init__ (self):
         super().__init__()
         self.tournament_report_controller = tournament_controller.TournamentReport()
@@ -81,8 +85,9 @@ class TournamentMenuController(HomeMenuController):
 
 
 class QuitAppController:
+    
     def __call__(self):
-        pass
+        sys.exit()
 
 
 

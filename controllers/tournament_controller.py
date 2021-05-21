@@ -4,8 +4,6 @@ from operator import itemgetter
 from operator import attrgetter
 
 import pandas as pd
-from tinydb import TinyDB, Query
-from tinydb.table import Document
 
 from controllers import main_control
 from controllers import create_menus
@@ -15,7 +13,7 @@ from views import view_main
 
 
 class CreateTournamentController:
-    """Create a tournament with entyering all the details, then save it in the database"""
+    """Create a tournament with entering all the details, then save it in the database"""
     
     def __init__(self):
         self.create_menu = create_menus.CreateMenus()
@@ -181,7 +179,7 @@ class CreateTournamentController:
         print("Joueurs dans le tournoi : " + str(self.players_ids))
         self.add_players_to_tournament()
         
-        # iterate in id's list, create instance of players, then order them by ranking.
+        # iterate in id's list, create instance of players, then sort them by ranking.
         for id in self.players_ids:
             player = player_model.player_database.get(doc_id=id) 
             self.players_serialized.append(player)
@@ -206,23 +204,19 @@ class StartTournament:
         self.view_final_scores = view_main.EndTournamentDisplay()
         
         self.tournament_object = self.select_a_tournament() # Ask to choose a tournament and return an instance of tournament
-        if self.tournament_object.list_of_tours != []:
-            print("\nLe tournoi à déja eu lieu, veuillez en choisir un autre\n")
-            time.sleep(1)
-            self.tournament_menu_controller()
+        
         self.sorted_players = self.sort_player_first_tour(self.tournament_object) # copy in the list "sorted_players" the players by ranking
-        self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players)) # 1st tour, copy the instance in tournament
+        self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players, self.tournament_object)) # 1st tour, copy the instance in tournament
         self.save_tournament_statement(self.tournament_object)
         
         # all the others tours
         for tour in range(int(self.tournament_object.number_of_tours) - 1):
             self.sorted_players.clear()
             self.sorted_players = self.sort_players_by_score(self.tournament_object.list_of_tours[tour])
-            self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players))
+            self.tournament_object.list_of_tours.append(self.tour.run(self.sorted_players, self.tournament_object))
             self.save_tournament_statement(self.tournament_object)
-       
+
         self.view_final_scores(self.tournament_object)
-      
 
     def save_tournament_statement(self, tournament_object):
 
@@ -246,30 +240,7 @@ class StartTournament:
             if choice == 'N':
                 break                
             print("Vous devez entrer 'Y' ou 'N'")
-
-        # Name = Query()
-        # db_tournament = tournament_model.tournament_database
-        # tours_table = db_tournament.table("tours")
-        # # tournament_serialized = tournament_object.serialized()
-        # tour_to_db = []
-        # for tour in tournament_serialized['Tours']:
-        #     tour_serialized = tour.serialized() 
-        #     for match in tour_serialized['Matchs']:
-        #         # player_1_and_result = []
-        #         # player_2_and_result = []
-        #         # player_1_id = match[0][0].player_id
-        #         player_1_and_result = [match[0][0], match[0][1]]
-        #         # print(player_1_and_result)
-        #         # player_2_id = db_players.get(Name["Nom"] == match[1][0].last_name).doc_id
-        #         player_2_and_result = [match[1][0], match[1][1]]
-        #         # print(player_2_and_result)               
-        #         tour_to_db.append([player_1_and_result, player_2_and_result])    
-        #     tour_serialized['Matchs'] = tour_to_db
-        #     tour_id = tours_table.insert(tour_serialized)
-        #     tour_ids.append(tour_id)    
-        #     db_tournament.update({"Tours" : tour_ids}, doc_ids=[tournament_object.tournament_id])
-       
-                    
+         
     def load_tournament_statement(self):
         # choisir un tournoi et calculer le nombre de tours restant
         sorted_players = []
@@ -294,15 +265,12 @@ class StartTournament:
                     print("Vous devez entrer le chiffre correspondant au tournoi")
             else:
                 choosen_tournament = tournament_model.tournament_database.get(doc_id=int(choice))
-                for tour in choosen_tournament["Tours"]: #TODO les noms des instances de tour redémarre à 1
-                    tour_serialized = tours_table.get(doc_id=tour) # TODO efface la valeur de 'Tours' dans le tournoi au lieu de la mettre à jour
+                for tour in choosen_tournament["Tours"]: 
+                    tour_serialized = tours_table.get(doc_id=tour) 
                     tour_object = self.tour.unserialized(tour_serialized)
                     tours_instances.append(tour_object)
                 choosen_tournament["Tours"] = tours_instances
                 tournament_object = self.tournament.unserialized(choosen_tournament)
-                input()
-                
-                
                
         else:
             print("Pas de tournoi en cours, retour au menu principal")
@@ -312,7 +280,7 @@ class StartTournament:
         for tour in range(tournament_object.number_of_tours - len(tournament_object.list_of_tours)):
             sorted_players.clear()
             sorted_players = self.sort_players_by_score(tournament_object.list_of_tours[tour])
-            tournament_object.list_of_tours.append(self.tour.run(sorted_players))
+            tournament_object.list_of_tours.append(self.tour.run(sorted_players, tournament_object)) #TODO les noms des instances de tour redémarre à 1
             self.save_tournament_statement(tournament_object)
 
         self.view_final_scores(tournament_object)
@@ -339,6 +307,8 @@ class StartTournament:
                     tournament_object = self.tournament.unserialized(choosen_tournament)
                     return tournament_object
         else:
+            print("Pas de tournois créé, veuillez créer un tournoi")
+            time.sleep(1) 
             self.home_menu_controller()
 
     def sort_player_first_tour(self, tournament):

@@ -1,10 +1,7 @@
-import time
-
 from tinydb import TinyDB
 
 from views import view_main
-from controllers import main_control
-from models import player_model
+
 
 tournament_database = TinyDB('models/tournament.json')
 
@@ -97,7 +94,7 @@ class Tour:
     Renvoi l'instance de tour
     """
     
-    TOUR_NUMBER = 1
+    # TOUR_NUMBER = 1
     
     def __init__(self, name=None, begin_time=None, end_time=None, list_of_finished_matchs=None):
         self.name = name
@@ -127,14 +124,14 @@ class Tour:
 
 
     def __repr__(self):
-        return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}.\n\n{self.list_of_finished_matchs}\n\n"
+        return f"{self.name} - Début : {self.begin_time}. Fin : {self.end_time}."
         
-    def run(self, sorted_players_list):
+    def run(self, sorted_players_list, tournament_object):
         self.view = view_main.TourDisplay()
         self.list_of_tours = []
         self.list_of_finished_matchs = []
-        self.name = "Tour " + str(Tour.TOUR_NUMBER)
-        Tour.TOUR_NUMBER += 1
+        self.name = "Tour " + str(len(tournament_object.list_of_tours) + 1)
+        # Tour.TOUR_NUMBER += 1
         
         self.begin_time, self.end_time = self.view.display_tournament_time()
 

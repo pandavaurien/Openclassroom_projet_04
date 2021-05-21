@@ -1,11 +1,10 @@
-# import models
 import time
 
 from tinydb import TinyDB
-# import pandas as pd
 
 from controllers import main_control
 from views import view_main
+
 
 player_database = TinyDB('models/players.json')
 

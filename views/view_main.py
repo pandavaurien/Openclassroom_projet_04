@@ -1,5 +1,6 @@
 import time
 from os import system, name
+
 import pandas as pd
 
 from models import player_model
@@ -56,9 +57,6 @@ class TournamentDisplay:
             if tournament['Tours'] == []:
                 print(f"{tournament.doc_id} - Nom: {tournament['Nom du tournoi']} - Lieu: {tournament['Lieu']}")
                 tournament_not_yet_started = True
-            else:
-                print("Pas de tournois créé, veuillez créer un tournoi")
-                time.sleep(1) 
 
         return tournament_not_yet_started
 
@@ -110,9 +108,20 @@ class EndTournamentDisplay:
               "------------------------------------------------\n"
               "-------------------Résultats--------------------\n"
               "------------------------------------------------\n")
-       
-        print(tournament_instance)
-
+           
+        print('Résultat final :\n')
+        for tour in tournament_instance.list_of_tours:
+            print(tour)
+            print()
+            print()
+            for match in tour.list_of_finished_matchs:
+                player_1 =player_model.player_database.get(doc_id=match[0][0])
+                score_player_P1 = match[0][1]
+                player_2 =player_model.player_database.get(doc_id=match[1][0])
+                score_player_P2 = match[1][1]
+                print(f"{player_1['Nom']} {player_1['Prenom']} CONTRE {player_2['Nom']} {player_2['Prenom']}\n"
+                      f"Score : {score_player_P1} --- {score_player_P2}\n")
+      
 
 class DisplayPlayersReport:
 
