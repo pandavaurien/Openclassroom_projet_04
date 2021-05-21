@@ -3,7 +3,7 @@
 class CreateMenus:
     """Create the main menu, and then
     leads to branchs of menus according to the number choosen"""
-    
+
     main_menu = [("1", "Menu Joueur"),
                  ("2", "Menu Tournoi"),
                  ("3", "Quitter")
@@ -14,7 +14,7 @@ class CreateMenus:
                    ("3", "Afficher un rapport"),
                    ("4", "Retour au menu principal")
                    ]
-    
+
     tournament_menu = [("1", "Créer un nouveau tournoi"),
                        ("2", "Lancer un tournoi existant"),
                        ("3", "Reprendre un tournoi en cours"),
@@ -31,7 +31,7 @@ class CreateMenus:
                            ("2", "Par ordre de classement"),
                            ("3", "Pour revenir au menu principal")
                            ]
-    
+
     tournaments_report_menu = [("1", "Afficher tous les tournois"),
                                ("2", "Choisir un tournoi"),
                                ("3", "Retour au menu principal")
@@ -46,7 +46,7 @@ class CreateMenus:
     def __call__(self, menu_to_display):
         """Display a menu and ask the user to choose"""
         for line in menu_to_display:
-            print(line[0] + " : "+ line[1])
+            print(line[0] + " : " + line[1])
         while True:
             entry = input("-->")
             for line in menu_to_display:

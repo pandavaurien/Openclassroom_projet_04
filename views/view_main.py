@@ -9,7 +9,7 @@ from models import tournament_model
 
 class MainDisplay:
     """Docstring"""
-   
+
     def display_title(self):
         """Display the title of the application"""
         print("------------------------------------------------\n"
@@ -21,7 +21,7 @@ class MainDisplay:
               " Entrez le numéro correspondant au menu choisi :\n"
               "------------------------------------------------\n"
               )
-    
+
 
 class ClearScreen:
     """Clear the terminal"""
@@ -33,7 +33,7 @@ class ClearScreen:
         else:
             _ = system('clear')
 
-  
+
 class FrameDisplay:
     """Display the datas from a controller"""
 
@@ -48,11 +48,11 @@ class FrameDisplay:
 
 class TournamentDisplay:
     """Display the tournament details if it's not already played"""
-    
+
     def __call__(self):
         tournament_not_yet_started = False
         tournaments_database = tournament_model.tournament_database
-                        
+
         for tournament in tournaments_database:
             if tournament['Tours'] == []:
                 print(f"{tournament.doc_id} - Nom: {tournament['Nom du tournoi']} - Lieu: {tournament['Lieu']}")
@@ -74,11 +74,11 @@ class PlayersDiplay:
 class TourDisplay:
     """Docstring"""
     def __init__(self):
-        self.match = tournament_model.Match() 
-    
+        self.match = tournament_model.Match()
+
     def display_tour(self, tour_name, list_of_matchs):
         """Display the tour at the beginning of it"""
-        
+
         print(f"--------------------------{tour_name}-------------------------\n")
         print()
         for match in list_of_matchs:
@@ -102,26 +102,26 @@ class TourDisplay:
 
 class EndTournamentDisplay:
     """Display the final score at the end of the tournament"""
-    def __call__(self, tournament_instance): #TODO Afficher les noms à la place des ids dans les résultats
+    def __call__(self, tournament_instance):
         print("------------------------------------------------\n"
               "-----------------Fin du tournoi-----------------\n"
               "------------------------------------------------\n"
               "-------------------Résultats--------------------\n"
               "------------------------------------------------\n")
-           
+
         print('Résultat final :\n')
         for tour in tournament_instance.list_of_tours:
             print(tour)
             print()
             print()
             for match in tour.list_of_finished_matchs:
-                player_1 =player_model.player_database.get(doc_id=match[0][0])
+                player_1 = player_model.player_database.get(doc_id=match[0][0])
                 score_player_P1 = match[0][1]
-                player_2 =player_model.player_database.get(doc_id=match[1][0])
+                player_2 = player_model.player_database.get(doc_id=match[1][0])
                 score_player_P2 = match[1][1]
                 print(f"{player_1['Nom']} {player_1['Prenom']} CONTRE {player_2['Nom']} {player_2['Prenom']}\n"
                       f"Score : {score_player_P1} --- {score_player_P2}\n")
-      
+
 
 class DisplayPlayersReport:
 
@@ -131,17 +131,18 @@ class DisplayPlayersReport:
               "------------------------------------------------\n"
               " Afficher les rapports :\n"
               )
-        
+
     def display_alphabetical(self, players_list):
         for player in players_list:
-            print(f"{player.last_name} {player.first_name} - {player.birthdate} - {player.gender} - Classement : {player.ranking}")
+            print(f"{player.last_name} {player.first_name} - {player.birthdate}"
+                  f" - {player.gender} - Classement : {player.ranking}")
         print("Appuyer sur une touche pour revenir au menu rapport")
         input()
 
-
     def display_ranking(self, players_list):
         for player in players_list:
-            print(f"Classement :{player.ranking} - {player.last_name} {player.first_name} - {player.birthdate} - {player.gender}")
+            print(f"Classement :{player.ranking} - {player.last_name}"
+                  f" {player.first_name} - {player.birthdate} - {player.gender}")
         print("Appuyer sur une touche pour revenir au menu rapport")
         input()
 
@@ -149,11 +150,11 @@ class DisplayPlayersReport:
 class DisplayTournamentsReport:
 
     def __call__(self):
-            print("------------------------------------------------\n"
-                  "--------------Rapport des tournois--------------\n"
-                  "------------------------------------------------\n"
-                  " Afficher les rapports :\n"
-                  )
+        print("------------------------------------------------\n"
+              "--------------Rapport des tournois--------------\n"
+              "------------------------------------------------\n"
+              " Afficher les rapports :\n"
+              )
 
     def display_tournaments(self, tournaments_list, players_list):
         for tournament in tournaments_list:
@@ -161,7 +162,7 @@ class DisplayTournamentsReport:
                   f"Nombre de tours : {tournament.number_of_tours}\n"
                   f"Contrôle du temps : {tournament.time_control}\n"
                   f"Description : {tournament.description}\n"
-                  )       
+                  )
             for player in players_list:
                 print(f"Joueurs : {player.last_name} - {player.first_name} - Classement : {player.ranking}")
             print()
@@ -190,7 +191,7 @@ class LoadTournamentDisplay:
         print("------------------------------------------------\n"
               "--------------Reprendre un tournoi--------------\n"
               "------------------------------------------------\n")
-        
+
         for tournament in tournament_model.tournament_database:
             if tournament["Tours"] != []:
                 if len(tournament["Tours"]) < tournament["Nombre de tours"]:
@@ -199,8 +200,5 @@ class LoadTournamentDisplay:
 
             else:
                 print("Il n'y a pas de tournoi en cours")
-                time.sleep(1) 
-        return tournaments_in_progress         
-
-        
-        
+                time.sleep(1)
+        return tournaments_in_progress
