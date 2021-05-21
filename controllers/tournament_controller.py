@@ -144,7 +144,7 @@ class CreateTournamentController:
         display_players_database = pd.read_json("models/players.json")
         print(display_players_database)
         print()
-        print("Vous devez choisir 8 joueurs maximum pour un tournoi")
+        print("Vous devez choisir un nombre de joueurs pair")
         print()
         print("Joueurs dans le tournoi : " + str(self.players_ids))
         print()
@@ -153,11 +153,13 @@ class CreateTournamentController:
         valid_id = False
         while not valid_id:
             id_choice = input("--> ")
-            if int(id_choice):
-                valid_id = True
-            else:
-                print("Vous devez entrer un nombre entier")
+            try:
+                int(id_choice)
 
+            except Exception:
+                print("Vous devez entrer un nombre entier")
+            else:
+                valid_id = True
         id_choice = int(id_choice)
 
         if id_choice <= 0 or id_choice > len(player_model.player_database):
@@ -202,6 +204,7 @@ class StartTournament:
         self.tournament_menu_controller = main_control.TournamentMenuController()
         self.tour = tournament_model.Tour()
         self.view_final_scores = view_main.EndTournamentDisplay()
+        self.home_menu_controller = main_control.HomeMenuController()
 
         # Ask to choose a tournament and return an instance of tournament
         self.tournament_object = self.select_a_tournament()
@@ -220,6 +223,7 @@ class StartTournament:
             self.save_tournament_statement(self.tournament_object)
 
         self.view_final_scores(self.tournament_object)
+        self.home_menu_controller()
 
     def save_tournament_statement(self, tournament_object):
 
@@ -240,9 +244,10 @@ class StartTournament:
             choice = input("-->")
             if choice == 'Y':
                 self.home_menu_controller()
-            if choice == 'N':
+            elif choice == 'N':
                 break
-            print("Vous devez entrer 'Y' ou 'N'")
+            else:
+                print("Vous devez entrer 'Y' ou 'N'")
 
     def load_tournament_statement(self):
         # choisir un tournoi et calculer le nombre de tours restant
@@ -280,10 +285,10 @@ class StartTournament:
             time.sleep(1)
             self.home_menu_controller()
 
-        for tour in range(tournament_object.number_of_tours - len(tournament_object.list_of_tours)):
+        for tour in range(int(tournament_object.number_of_tours) - len(tournament_object.list_of_tours)):
             sorted_players.clear()
             sorted_players = self.sort_players_by_score(tournament_object.list_of_tours[tour])
-            tournament_object.list_of_tours.append(self.tour.run(sorted_players, tournament_object))  #TODO les noms des instances de tour redémarre à 1
+            tournament_object.list_of_tours.append(self.tour.run(sorted_players, tournament_object))
             self.save_tournament_statement(tournament_object)
 
         self.view_final_scores(tournament_object)

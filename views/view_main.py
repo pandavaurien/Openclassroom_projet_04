@@ -8,7 +8,7 @@ from models import tournament_model
 
 
 class MainDisplay:
-    """Docstring"""
+    """Display the main title"""
 
     def display_title(self):
         """Display the title of the application"""
@@ -122,6 +122,8 @@ class EndTournamentDisplay:
                 print(f"{player_1['Nom']} {player_1['Prenom']} CONTRE {player_2['Nom']} {player_2['Prenom']}\n"
                       f"Score : {score_player_P1} --- {score_player_P2}\n")
 
+        input("Appuyez sur une touche pour revenir au menu principal")
+
 
 class DisplayPlayersReport:
 
@@ -181,7 +183,7 @@ class AskForContinuingTournament:
             if choice == 'Y':
                 break
             if choice == 'N':
-                self
+                pass
 
 
 class LoadTournamentDisplay:
@@ -194,7 +196,7 @@ class LoadTournamentDisplay:
 
         for tournament in tournament_model.tournament_database:
             if tournament["Tours"] != []:
-                if len(tournament["Tours"]) < tournament["Nombre de tours"]:
+                if len(tournament["Tours"]) < int(tournament["Nombre de tours"]):
                     print(f"{tournament['Id du tournoi']} - {tournament['Nom du tournoi']} {tournament['Lieu']}")
                     tournaments_in_progress = True
 
