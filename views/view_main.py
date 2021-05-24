@@ -200,7 +200,4 @@ class LoadTournamentDisplay:
                     print(f"{tournament['Id du tournoi']} - {tournament['Nom du tournoi']} {tournament['Lieu']}")
                     tournaments_in_progress = True
 
-            else:
-                print("Il n'y a pas de tournoi en cours")
-                time.sleep(1)
         return tournaments_in_progress

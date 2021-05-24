@@ -240,14 +240,18 @@ class StartTournament:
         db_tournament.update({"Tours": StartTournament.TOURS_PLAYED}, doc_ids=[tournament_object.tournament_id])
 
         print("Voulez vous sauvegarder et quitter le tournoi en cours ? Y / N")
-        while True:
+        valid_choice = False
+        while not valid_choice:
             choice = input("-->")
             if choice == 'Y':
+                valid_choice = True
                 self.home_menu_controller()
             elif choice == 'N':
+                valid_choice = True
                 break
             else:
                 print("Vous devez entrer 'Y' ou 'N'")
+                continue
 
     def load_tournament_statement(self):
         # choisir un tournoi et calculer le nombre de tours restant
@@ -292,6 +296,8 @@ class StartTournament:
             self.save_tournament_statement(tournament_object)
 
         self.view_final_scores(tournament_object)
+        self.home_menu_controller()
+
 
     def select_a_tournament(self):
         self.tournament = tournament_model.Tournament()
