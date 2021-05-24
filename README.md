@@ -19,9 +19,11 @@ Il permet de :
 Vous devez installer python, la dernière version se trouve à cette adresse 
 https://www.python.org/downloads/
 
-Les scripts python se lance depuis un terminal, pour ouvrir un terminal sur Windows, pressez ``` touche windows + r``` et entrez ```cmd```
-Sur Mac, pressez ```touche command + espace``` et entrez ```terminal```
-Sur Linux, vous pouvez ouviri un terminal en pressant les touches ```Ctrl + Alt + T```
+Les scripts python se lance depuis un terminal, pour ouvrir un terminal sur Windows, pressez ``` touche windows + r``` et entrez ```cmd```.
+
+Sur Mac, pressez ```touche command + espace``` et entrez ```terminal```.
+
+Sur Linux, vous pouvez ouviri un terminal en pressant les touches ```Ctrl + Alt + T```.
 
 Le programme utilise plusieurs librairies externes, et modules de Python, qui sont repertoriés dans le fichier ```requirements.txt```
 
