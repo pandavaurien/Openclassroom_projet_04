@@ -15,6 +15,7 @@ Il permet de :
 - Arrêter un tournoi en cours et le reprendre plus tard.
 
 
+
 ## Prérequis
 
 Vous devez installer python, la dernière version se trouve à cette adresse 
@@ -40,6 +41,7 @@ pip install -r requirement.txt
 afin d'installer toutes les librairies.
 
 
+
 ## Démarrage 
 
 Le programme est écrit en Python, copier tous les fichiers et repertoires du repository, et lancer le programme depuis un terminal via la commande :
@@ -47,6 +49,7 @@ Le programme est écrit en Python, copier tous les fichiers et repertoires du re
 ```bash
 python main.py
 ```
+
 
 
 ## Rapport flake8
