@@ -29,13 +29,8 @@ Le programme utilise plusieurs librairies externes, et modules de Python, qui so
 
 Vous pouvez installer un environnement externe via la commande ```pip install venv``` dans le terminal, puis entrez la commande :
 
-````bash
-pip install -r requirement.txt```
-
-Les modules et librairies externes s'installent via la console en tapant:
-
 ```bash
-pip 'Nom_du_module'
+pip install -r requirement.txt
 ```
 
 ## Démarrage 
@@ -52,11 +47,6 @@ Le repository contient un rapport flake8, qui n'affiche aucune erreur. Il est po
 
 ```bash
 flake8
-
 ```
 
 Le fichier ```.flake8``` à la racine contient les paramètres concernant la génération du rapport.
-
-
-
-
