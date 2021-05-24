@@ -28,11 +28,12 @@ Sur Linux, vous pouvez ouviri un terminal en pressant les touches ```Ctrl + Alt 
 Le programme utilise plusieurs librairies externes, et modules de Python, qui sont repertoriés dans le fichier ```requirements.txt```
 
 Vous pouvez installer un environnement externe via la commande ```pip install venv``` dans le terminal, puis entrez la commande :
+
 ````bash
-pip install -r requirement.txt
-```
+pip install -r requirement.txt```
 
 Les modules et librairies externes s'installent via la console en tapant:
+
 ```bash
 pip 'Nom_du_module'
 ```
