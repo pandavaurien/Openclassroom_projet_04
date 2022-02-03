@@ -298,7 +298,6 @@ class StartTournament:
         self.view_final_scores(tournament_object)
         self.home_menu_controller()
 
-
     def select_a_tournament(self):
         self.tournament = tournament_model.Tournament()
         self.display_tournaments = view_main.TournamentDisplay()

@@ -60,4 +60,6 @@ Le repository contient un rapport flake8, qui n'affiche aucune erreur. Il est po
 flake8
 ```
 
-Le fichier ```.flake8``` à la racine contient les paramètres concernant la génération du rapport.
+Le fichier ```setup.cfg``` à la racine contient les paramètres concernant la génération du rapport.
+
+Le rapport se trouve dans le repertoire ```flake-report```
